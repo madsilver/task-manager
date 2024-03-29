@@ -3,12 +3,15 @@ package presenter
 import "github.com/madsilver/task-manager/internal/entity"
 
 func PopulateTask(ent *entity.Task) *Task {
-	return &Task{
+	task := &Task{
 		ID:      ent.ID,
 		UserID:  ent.UserID,
 		Summary: ent.Summary,
-		Date:    ent.Date,
 	}
+	if ent.Date != nil {
+		task.Date = *ent.Date
+	}
+	return task
 }
 
 func PopulateTasks(entities []*entity.Task) []*Task {
