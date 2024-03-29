@@ -65,12 +65,12 @@ func TestValidateHeader_RoleMissing(t *testing.T) {
 	assert.Equal(t, "x-role header missing", *response.Error)
 }
 
-func TestAuthAdmin(t *testing.T) {
+func TestAuthRole_Admin(t *testing.T) {
 	e := echo.New()
 	ctx := e.NewContext(nil, nil)
 	ctx.Set("role", "manager")
 
-	err := AuthAdmin(func(ctx echo.Context) error {
+	err := AuthRole("manager")(func(ctx echo.Context) error {
 		return nil
 	})(ctx)
 
@@ -83,7 +83,7 @@ func TestAuthAdmin_Error(t *testing.T) {
 	ctx := e.NewContext(httptest.NewRequest(http.MethodGet, "/", nil), rec)
 	ctx.Set("role", "technician")
 
-	err := AuthAdmin(func(ctx echo.Context) error {
+	err := AuthRole("manager")(func(ctx echo.Context) error {
 		return nil
 	})(ctx)
 
@@ -91,7 +91,7 @@ func TestAuthAdmin_Error(t *testing.T) {
 	assert.Equal(t, http.StatusForbidden, rec.Code)
 }
 
-func TestAuthAdminOrOwner_Manager(t *testing.T) {
+func TestAuthOwnerTask_Manager(t *testing.T) {
 	e := echo.New()
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -100,7 +100,7 @@ func TestAuthAdminOrOwner_Manager(t *testing.T) {
 	ctx.Set(UserContext, "1")
 	ctx.QueryParams().Set("user", "99")
 
-	err := AuthAdminOrOwner(func(ctx echo.Context) error {
+	err := AuthOwnerTask(func(ctx echo.Context) error {
 		return nil
 	})(ctx)
 
@@ -108,7 +108,7 @@ func TestAuthAdminOrOwner_Manager(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code)
 }
 
-func TestAuthAdminOrOwner_Technician(t *testing.T) {
+func TestAuthOwnerTask_Technician(t *testing.T) {
 	e := echo.New()
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -117,7 +117,7 @@ func TestAuthAdminOrOwner_Technician(t *testing.T) {
 	ctx.Set(UserContext, "1")
 	ctx.QueryParams().Set("user", "1")
 
-	err := AuthAdminOrOwner(func(ctx echo.Context) error {
+	err := AuthOwnerTask(func(ctx echo.Context) error {
 		return nil
 	})(ctx)
 
@@ -125,7 +125,7 @@ func TestAuthAdminOrOwner_Technician(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code)
 }
 
-func TestAuthAdminOrOwner_Error(t *testing.T) {
+func TestAuthOwnerTask_Error(t *testing.T) {
 	e := echo.New()
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -134,7 +134,7 @@ func TestAuthAdminOrOwner_Error(t *testing.T) {
 	ctx.Set(UserContext, "1")
 	ctx.QueryParams().Set("user", "99")
 
-	err := AuthAdminOrOwner(func(ctx echo.Context) error {
+	err := AuthOwnerTask(func(ctx echo.Context) error {
 		return nil
 	})(ctx)
 

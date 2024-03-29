@@ -10,6 +10,7 @@ const (
 	UserContext = "user"
 	RoleContext = "role"
 	AdminRole   = "manager"
+	TechRole    = "technician"
 )
 
 func ValidateHeader(next echo.HandlerFunc) echo.HandlerFunc {
@@ -28,16 +29,20 @@ func ValidateHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func AuthAdmin(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(ctx echo.Context) error {
-		if ctx.Get(RoleContext) != AdminRole {
+func AuthRole(roles ...string) func(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(ctx echo.Context) error {
+			for _, role := range roles {
+				if ctx.Get(RoleContext) == role {
+					return next(ctx)
+				}
+			}
 			return ctx.JSON(http.StatusForbidden, presenter.NewErrorResponse("forbidden", ""))
 		}
-		return next(ctx)
 	}
 }
 
-func AuthAdminOrOwner(next echo.HandlerFunc) echo.HandlerFunc {
+func AuthOwnerTask(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		userParam := ctx.QueryParam("user")
 		if ctx.Get(RoleContext) == AdminRole ||
