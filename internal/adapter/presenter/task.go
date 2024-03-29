@@ -6,3 +6,7 @@ type Task struct {
 	Summary string `json:"summary"`
 	Date    string `json:"date"`
 }
+
+type TaskCreate struct {
+	Summary string `json:"summary"`
+}

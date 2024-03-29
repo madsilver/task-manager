@@ -40,3 +40,22 @@ func (r *TaskRepository) FindAll(query string, args any) ([]*entity.Task, error)
 	})
 	return tasks, err
 }
+
+func (r *TaskRepository) CreateTask(task *entity.Task) error {
+	query := "INSERT INTO Tasks (UserID, Summary) VALUES (?,?)"
+	res, err := r.db.Save(query, &task.UserID, &task.Summary)
+	if err != nil {
+		return err
+	}
+	task.ID = uint64(res.(int64))
+	return err
+}
+
+func (r *TaskRepository) UpdateTask(task *entity.Task) error {
+	query := "UPDATE Tasks SET Summary = ? WHERE ID = ?"
+	err := r.db.Update(query, &task.Summary, &task.ID)
+	if err != nil {
+		return err
+	}
+	return err
+}

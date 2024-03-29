@@ -34,6 +34,20 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
+// CreateTask mocks base method.
+func (m *MockRepository) CreateTask(task *entity.Task) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTask", task)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateTask indicates an expected call of CreateTask.
+func (mr *MockRepositoryMockRecorder) CreateTask(task interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTask", reflect.TypeOf((*MockRepository)(nil).CreateTask), task)
+}
+
 // FindAllTasks mocks base method.
 func (m *MockRepository) FindAllTasks(args any) ([]*entity.Task, error) {
 	m.ctrl.T.Helper()
@@ -47,4 +61,18 @@ func (m *MockRepository) FindAllTasks(args any) ([]*entity.Task, error) {
 func (mr *MockRepositoryMockRecorder) FindAllTasks(args interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllTasks", reflect.TypeOf((*MockRepository)(nil).FindAllTasks), args)
+}
+
+// UpdateTask mocks base method.
+func (m *MockRepository) UpdateTask(task *entity.Task) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTask", task)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateTask indicates an expected call of UpdateTask.
+func (mr *MockRepositoryMockRecorder) UpdateTask(task interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTask", reflect.TypeOf((*MockRepository)(nil).UpdateTask), task)
 }
