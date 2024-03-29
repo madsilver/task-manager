@@ -87,6 +87,20 @@ func TestTaskRepository_Update(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestTaskRepository_Delete(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockDB := mockMysql.NewMockDB(ctrl)
+	mockDB.EXPECT().
+		Delete(gomock.Any(), gomock.Any()).
+		Return(nil)
+	repos := NewTaskRepository(mockDB)
+
+	err := repos.Delete(1)
+
+	assert.Nil(t, err)
+}
+
 func mockQueryFunction(id uint64, userId uint64, summary string, date string) any {
 	return func(query string, args any, fn func(scan func(dest ...any) error) error) error {
 		return fn(func(dest ...any) error {
