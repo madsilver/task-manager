@@ -1,6 +1,6 @@
 module github.com/madsilver/task-manager
 
-go 1.22.1
+go 1.23
 
 require (
 	github.com/go-sql-driver/mysql v1.8.1
