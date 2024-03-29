@@ -28,5 +28,5 @@ test-v: ## Run the tests of the project (verbose)
 
 mock: ## Build mocks
 	@go get github.com/golang/mock/gomock
-	@go install github.com/golang/mock/mockgen
+	@go get github.com/golang/mock/mockgen@v1.6.0
 	@~/go/bin/mockgen -source=internal/adapter/controller/task.go -destination=internal/adapter/controller/mock/task.go
