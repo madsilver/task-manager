@@ -57,6 +57,14 @@ func (m *MysqlDB) Save(query string, args ...any) (any, error) {
 	return result.LastInsertId()
 }
 
+func (m *MysqlDB) Update(query string, args ...any) error {
+	_, err := m.Conn.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func NewMysqlDB() *MysqlDB {
 	conn, err := sql.Open("mysql", getDSN())
 	if err != nil {
