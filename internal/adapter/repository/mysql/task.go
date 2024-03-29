@@ -9,6 +9,7 @@ type DB interface {
 	QueryRow(query string, args any, fn func(scan func(dest ...any) error) error) error
 	Save(query string, args ...any) (any, error)
 	Update(query string, args ...any) error
+	Delete(query string, args any) error
 }
 
 type TaskRepository struct {
@@ -60,4 +61,9 @@ func (r *TaskRepository) Create(task *entity.Task) error {
 func (r *TaskRepository) Update(task *entity.Task) error {
 	query := "UPDATE Tasks SET Summary = ? WHERE ID = ?"
 	return r.db.Update(query, &task.Summary, &task.ID)
+}
+
+func (r *TaskRepository) Delete(id any) error {
+	query := "DELETE FROM Tasks WHERE ID = ?"
+	return r.db.Delete(query, id)
 }

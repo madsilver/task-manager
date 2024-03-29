@@ -156,7 +156,7 @@ func TestTaskController_UpdateTask(t *testing.T) {
 	mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{UserID: 1}, nil)
 	mockRepo.EXPECT().Update(gomock.Any()).Return(nil)
 	e := echo.New()
-	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks", nil), httptest.NewRecorder())
+	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
 	ctx.Request().Body = io.NopCloser(bytes.NewReader([]byte("{\"summary\": \"summary test 123\"}")))
 	ctx.Request().Header.Set("Content-Type", "application/json")
 	ctx.Request().ContentLength = 31
@@ -172,7 +172,7 @@ func TestTaskController_UpdateTask_BindError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	e := echo.New()
-	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks", nil), httptest.NewRecorder())
+	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
 	ctx.Request().ContentLength = 31
 	controller := NewTaskController(mockController.NewMockRepository(ctrl))
 
@@ -181,13 +181,13 @@ func TestTaskController_UpdateTask_BindError(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, ctx.Response().Status)
 }
 
-func TestTaskController_UpdateTask_TaskNotFound(t *testing.T) {
+func TestTaskController_UpdateTask_NotFound(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockRepo := mockController.NewMockRepository(ctrl)
 	mockRepo.EXPECT().FindByID(gomock.Any()).Return(nil, errors.New("error"))
 	e := echo.New()
-	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks", nil), httptest.NewRecorder())
+	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
 	ctx.Request().Body = io.NopCloser(bytes.NewReader([]byte("{\"summary\": \"summary test 123\"}")))
 	ctx.Request().Header.Set("Content-Type", "application/json")
 	ctx.Request().ContentLength = 31
@@ -205,7 +205,7 @@ func TestTaskController_UpdateTask_Forbidden(t *testing.T) {
 	mockRepo := mockController.NewMockRepository(ctrl)
 	mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{UserID: 1}, nil)
 	e := echo.New()
-	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks", nil), httptest.NewRecorder())
+	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
 	ctx.Request().Body = io.NopCloser(bytes.NewReader([]byte("{\"summary\": \"summary test 123\"}")))
 	ctx.Request().Header.Set("Content-Type", "application/json")
 	ctx.Request().ContentLength = 31
@@ -224,7 +224,7 @@ func TestTaskController_UpdateTask_Error(t *testing.T) {
 	mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{UserID: 1}, nil)
 	mockRepo.EXPECT().Update(gomock.Any()).Return(errors.New("error"))
 	e := echo.New()
-	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks", nil), httptest.NewRecorder())
+	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
 	ctx.Request().Body = io.NopCloser(bytes.NewReader([]byte("{\"summary\": \"summary test 123\"}")))
 	ctx.Request().Header.Set("Content-Type", "application/json")
 	ctx.Request().ContentLength = 31
@@ -232,6 +232,56 @@ func TestTaskController_UpdateTask_Error(t *testing.T) {
 	controller := NewTaskController(mockRepo)
 
 	_ = controller.UpdateTask(ctx)
+
+	assert.Equal(t, http.StatusInternalServerError, ctx.Response().Status)
+}
+
+func TestTaskController_DeleteTask(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockRepo := mockController.NewMockRepository(ctrl)
+	mockRepo.EXPECT().FindByID(gomock.Any()).Return(nil, nil)
+	mockRepo.EXPECT().Delete(gomock.Any()).Return(nil)
+	e := echo.New()
+	ctx := e.NewContext(httptest.NewRequest(http.MethodDelete, "/v1/tasks/1", nil), httptest.NewRecorder())
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("1")
+	controller := NewTaskController(mockRepo)
+
+	_ = controller.DeleteTask(ctx)
+
+	assert.Equal(t, http.StatusOK, ctx.Response().Status)
+}
+
+func TestTaskController_DeleteTask_NotFound(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockRepo := mockController.NewMockRepository(ctrl)
+	mockRepo.EXPECT().FindByID(gomock.Any()).Return(nil, errors.New("error"))
+	e := echo.New()
+	ctx := e.NewContext(httptest.NewRequest(http.MethodDelete, "/v1/tasks/1", nil), httptest.NewRecorder())
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("1")
+	controller := NewTaskController(mockRepo)
+
+	_ = controller.DeleteTask(ctx)
+
+	assert.Equal(t, http.StatusNotFound, ctx.Response().Status)
+}
+
+func TestTaskController_DeleteTask_Error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockRepo := mockController.NewMockRepository(ctrl)
+	mockRepo.EXPECT().FindByID(gomock.Any()).Return(nil, nil)
+	mockRepo.EXPECT().Delete(gomock.Any()).Return(errors.New("error"))
+	e := echo.New()
+	ctx := e.NewContext(httptest.NewRequest(http.MethodDelete, "/v1/tasks/1", nil), httptest.NewRecorder())
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("1")
+	controller := NewTaskController(mockRepo)
+
+	_ = controller.DeleteTask(ctx)
 
 	assert.Equal(t, http.StatusInternalServerError, ctx.Response().Status)
 }

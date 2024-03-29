@@ -13,6 +13,7 @@ type Repository interface {
 	FindByID(args any) (*entity.Task, error)
 	Create(task *entity.Task) error
 	Update(task *entity.Task) error
+	Delete(id any) error
 }
 
 type TaskController struct {
@@ -26,7 +27,7 @@ func NewTaskController(repository Repository) *TaskController {
 }
 
 func (c *TaskController) FindTasks(ctx echo.Context) error {
-	var arg uint64
+	var arg any
 	if ctx.Get("role") == "technician" {
 		arg = ctx.Get("user").(uint64)
 	}
@@ -89,4 +90,19 @@ func (c *TaskController) UpdateTask(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
 	}
 	return ctx.JSON(http.StatusOK, presenter.PopulateTask(task))
+}
+
+func (c *TaskController) DeleteTask(ctx echo.Context) error {
+	param := ctx.Param("id")
+	_, err := c.repository.FindByID(param)
+	if err != nil {
+		return ctx.JSON(http.StatusNotFound, presenter.NewErrorResponse("task not found", ""))
+	}
+
+	err = c.repository.Delete(param)
+	if err != nil {
+		log.Error(err.Error())
+		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
+	}
+	return ctx.JSON(http.StatusOK, nil)
 }

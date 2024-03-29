@@ -33,6 +33,20 @@ func (m *MockDB) EXPECT() *MockDBMockRecorder {
 	return m.recorder
 }
 
+// Delete mocks base method.
+func (m *MockDB) Delete(query string, args any) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", query, args)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockDBMockRecorder) Delete(query, args interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockDB)(nil).Delete), query, args)
+}
+
 // Query mocks base method.
 func (m *MockDB) Query(query string, args any, fn func(func(...any) error) error) error {
 	m.ctrl.T.Helper()

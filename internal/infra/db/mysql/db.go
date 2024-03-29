@@ -16,7 +16,7 @@ func (m *MysqlDB) Query(query string, args any, fn func(scan func(dest ...any) e
 	var rows *sql.Rows
 	var err error
 
-	if args != "" {
+	if args != nil && args != "" {
 		rows, err = m.Conn.Query(query, args)
 	} else {
 		rows, err = m.Conn.Query(query)
@@ -59,6 +59,14 @@ func (m *MysqlDB) Save(query string, args ...any) (any, error) {
 
 func (m *MysqlDB) Update(query string, args ...any) error {
 	_, err := m.Conn.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *MysqlDB) Delete(query string, args any) error {
+	_, err := m.Conn.Exec(query, args)
 	if err != nil {
 		return err
 	}
