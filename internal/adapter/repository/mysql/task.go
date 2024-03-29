@@ -2,33 +2,30 @@ package mysql
 
 import (
 	"github.com/madsilver/task-manager/internal/entity"
-	"github.com/madsilver/task-manager/internal/infra/db"
 )
 
-type TaskRepository struct {
-	db db.DB
+type DB interface {
+	Query(query string, args any, fn func(scan func(dest ...any) error) error) error
+	QueryRow(query string, args any, fn func(scan func(dest ...any) error) error) error
+	Save(query string, args ...any) (any, error)
+	Update(query string, args ...any) error
 }
 
-func NewTaskRepository(db db.DB) *TaskRepository {
+type TaskRepository struct {
+	db DB
+}
+
+func NewTaskRepository(db DB) *TaskRepository {
 	return &TaskRepository{
 		db,
 	}
 }
 
-func (r *TaskRepository) FindAllTasks(args any) ([]*entity.Task, error) {
+func (r *TaskRepository) FindAll(args any) ([]*entity.Task, error) {
 	query := "SELECT * FROM Tasks"
-	if args != "" {
-		query = query + " WHERE ID = ?"
+	if args != nil {
+		query = query + " WHERE UserID = ?"
 	}
-	return r.FindAll(query, args)
-}
-
-func (r *TaskRepository) FindAllTasksByUser(args any) ([]*entity.Task, error) {
-	query := "SELECT * FROM Tasks WHERE UserID = ?"
-	return r.FindAll(query, args)
-}
-
-func (r *TaskRepository) FindAll(query string, args any) ([]*entity.Task, error) {
 	var tasks []*entity.Task
 	err := r.db.Query(query, args, func(scan func(dest ...any) error) error {
 		task := &entity.Task{}
@@ -41,21 +38,26 @@ func (r *TaskRepository) FindAll(query string, args any) ([]*entity.Task, error)
 	return tasks, err
 }
 
-func (r *TaskRepository) CreateTask(task *entity.Task) error {
+func (r *TaskRepository) FindByID(args any) (*entity.Task, error) {
+	query := "SELECT * FROM Tasks WHERE ID = ?"
+	task := &entity.Task{}
+	err := r.db.QueryRow(query, args, func(scan func(dest ...any) error) error {
+		return scan(&task.ID, &task.UserID, &task.Summary, &task.Date)
+	})
+	return task, err
+}
+
+func (r *TaskRepository) Create(task *entity.Task) error {
 	query := "INSERT INTO Tasks (UserID, Summary) VALUES (?,?)"
 	res, err := r.db.Save(query, &task.UserID, &task.Summary)
 	if err != nil {
 		return err
 	}
 	task.ID = uint64(res.(int64))
-	return err
+	return nil
 }
 
-func (r *TaskRepository) UpdateTask(task *entity.Task) error {
+func (r *TaskRepository) Update(task *entity.Task) error {
 	query := "UPDATE Tasks SET Summary = ? WHERE ID = ?"
-	err := r.db.Update(query, &task.Summary, &task.ID)
-	if err != nil {
-		return err
-	}
-	return err
+	return r.db.Update(query, &task.Summary, &task.ID)
 }

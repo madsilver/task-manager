@@ -34,45 +34,60 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
-// CreateTask mocks base method.
-func (m *MockRepository) CreateTask(task *entity.Task) error {
+// Create mocks base method.
+func (m *MockRepository) Create(task *entity.Task) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateTask", task)
+	ret := m.ctrl.Call(m, "Create", task)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CreateTask indicates an expected call of CreateTask.
-func (mr *MockRepositoryMockRecorder) CreateTask(task interface{}) *gomock.Call {
+// Create indicates an expected call of Create.
+func (mr *MockRepositoryMockRecorder) Create(task interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTask", reflect.TypeOf((*MockRepository)(nil).CreateTask), task)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockRepository)(nil).Create), task)
 }
 
-// FindAllTasks mocks base method.
-func (m *MockRepository) FindAllTasks(args any) ([]*entity.Task, error) {
+// FindAll mocks base method.
+func (m *MockRepository) FindAll(args any) ([]*entity.Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAllTasks", args)
+	ret := m.ctrl.Call(m, "FindAll", args)
 	ret0, _ := ret[0].([]*entity.Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindAllTasks indicates an expected call of FindAllTasks.
-func (mr *MockRepositoryMockRecorder) FindAllTasks(args interface{}) *gomock.Call {
+// FindAll indicates an expected call of FindAll.
+func (mr *MockRepositoryMockRecorder) FindAll(args interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllTasks", reflect.TypeOf((*MockRepository)(nil).FindAllTasks), args)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockRepository)(nil).FindAll), args)
 }
 
-// UpdateTask mocks base method.
-func (m *MockRepository) UpdateTask(task *entity.Task) error {
+// FindByID mocks base method.
+func (m *MockRepository) FindByID(args any) (*entity.Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateTask", task)
+	ret := m.ctrl.Call(m, "FindByID", args)
+	ret0, _ := ret[0].(*entity.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByID indicates an expected call of FindByID.
+func (mr *MockRepositoryMockRecorder) FindByID(args interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockRepository)(nil).FindByID), args)
+}
+
+// Update mocks base method.
+func (m *MockRepository) Update(task *entity.Task) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", task)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdateTask indicates an expected call of UpdateTask.
-func (mr *MockRepositoryMockRecorder) UpdateTask(task interface{}) *gomock.Call {
+// Update indicates an expected call of Update.
+func (mr *MockRepositoryMockRecorder) Update(task interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTask", reflect.TypeOf((*MockRepository)(nil).UpdateTask), task)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockRepository)(nil).Update), task)
 }
