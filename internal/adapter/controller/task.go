@@ -9,9 +9,10 @@ import (
 )
 
 type Repository interface {
-	FindAllTasks(args any) ([]*entity.Task, error)
-	CreateTask(task *entity.Task) error
-	UpdateTask(task *entity.Task) error
+	FindAll(args any) ([]*entity.Task, error)
+	FindByID(args any) (*entity.Task, error)
+	Create(task *entity.Task) error
+	Update(task *entity.Task) error
 }
 
 type TaskController struct {
@@ -25,13 +26,26 @@ func NewTaskController(repository Repository) *TaskController {
 }
 
 func (c *TaskController) FindTasks(ctx echo.Context) error {
-	userParam := ctx.QueryParam("user")
-	tasks, err := c.repository.FindAllTasks(userParam)
+	var arg uint64
+	if ctx.Get("role") == "technician" {
+		arg = ctx.Get("user").(uint64)
+	}
+	tasks, err := c.repository.FindAll(arg)
 	if err != nil {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
 	}
 	return ctx.JSON(http.StatusOK, presenter.PopulateTasks(tasks))
+}
+
+func (c *TaskController) FindTaskByID(ctx echo.Context) error {
+	param := ctx.Param("id")
+	task, err := c.repository.FindByID(param)
+	if err != nil {
+		log.Error(err.Error())
+		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
+	}
+	return ctx.JSON(http.StatusOK, presenter.PopulateTask(task))
 }
 
 func (c *TaskController) CreateTask(ctx echo.Context) error {
@@ -40,8 +54,11 @@ func (c *TaskController) CreateTask(ctx echo.Context) error {
 		log.Info(err.Error())
 		return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse("bad request", err.Error()))
 	}
-	task, _ := entity.NewTask(ctx.Get("user"), body.Summary)
-	err := c.repository.CreateTask(task)
+	task := &entity.Task{
+		UserID:  ctx.Get("user").(uint64),
+		Summary: body.Summary,
+	}
+	err := c.repository.Create(task)
 	if err != nil {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
@@ -55,8 +72,18 @@ func (c *TaskController) UpdateTask(ctx echo.Context) error {
 		log.Info(err.Error())
 		return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse("bad request", err.Error()))
 	}
-	task, _ := entity.NewTask(ctx.Get("user"), body.Summary)
-	err := c.repository.UpdateTask(task)
+	param := ctx.Param("id")
+	task, err := c.repository.FindByID(param)
+	if err != nil {
+		return ctx.JSON(http.StatusNotFound, presenter.NewErrorResponse("task not found", ""))
+	}
+
+	if task.UserID != ctx.Get("user").(uint64) {
+		return ctx.JSON(http.StatusForbidden, presenter.NewErrorResponse("operation not allowed", ""))
+	}
+
+	task.Summary = body.Summary
+	err = c.repository.Update(task)
 	if err != nil {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
