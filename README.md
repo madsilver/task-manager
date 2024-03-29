@@ -1,6 +1,6 @@
 # Task Manager
 
-![Badge](https://img.shields.io/badge/Go-v1.22.1-blue)
+![Badge](https://img.shields.io/badge/Go-v1.21-blue)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=madsilver_silver-clean-code&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=madsilver_task-manager)
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=madsilver_silver-clean-code&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=madsilver_task-manager)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=madsilver_silver-clean-code&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=madsilver_task-manager)

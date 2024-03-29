@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/madsilver/task-manager/internal/adapter/presenter"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -19,11 +20,15 @@ func ValidateHeader(next echo.HandlerFunc) echo.HandlerFunc {
 		if user == "" {
 			return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse("x-user-id header missing", ""))
 		}
+		userId, err := strconv.ParseUint(user, 10, 64)
+		if err != nil {
+			return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse("x-user-id header must be a number", ""))
+		}
 		role := ctx.Request().Header.Get("x-role")
 		if role == "" {
 			return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse("x-role header missing", ""))
 		}
-		ctx.Set(UserContext, user)
+		ctx.Set(UserContext, userId)
 		ctx.Set(RoleContext, role)
 		return next(ctx)
 	}
@@ -39,17 +44,5 @@ func AuthRole(roles ...string) func(next echo.HandlerFunc) echo.HandlerFunc {
 			}
 			return ctx.JSON(http.StatusForbidden, presenter.NewErrorResponse("forbidden", ""))
 		}
-	}
-}
-
-func AuthOwnerTask(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(ctx echo.Context) error {
-		userParam := ctx.QueryParam("user")
-		if ctx.Get(RoleContext) == AdminRole ||
-			ctx.Get(UserContext) == userParam {
-			return next(ctx)
-		}
-
-		return ctx.JSON(http.StatusForbidden, presenter.NewErrorResponse("forbidden", "access to task not allowed"))
 	}
 }

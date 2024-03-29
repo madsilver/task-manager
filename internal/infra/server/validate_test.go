@@ -19,7 +19,7 @@ func TestValidateHeader(t *testing.T) {
 	ctx := e.NewContext(req, rec)
 
 	err := ValidateHeader(func(ctx echo.Context) error {
-		assert.Equal(t, "1", ctx.Get("user"))
+		assert.Equal(t, uint64(1), ctx.Get("user").(uint64))
 		assert.Equal(t, "manager", ctx.Get("role"))
 		return nil
 	})(ctx)
@@ -32,6 +32,24 @@ func TestValidateHeader(t *testing.T) {
 }
 
 func TestValidateHeader_UserMissing(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.Header.Set("x-role", "admin")
+	req.Header.Set("x-user-id", "a123")
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+
+	err := ValidateHeader(nil)(ctx)
+
+	response := &presenter.ErrorResponse{}
+	_ = json.Unmarshal(rec.Body.Bytes(), response)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusBadRequest, rec.Code)
+	assert.Equal(t, "x-user-id header must be a number", *response.Error)
+}
+
+func TestValidateHeader_UserFormatError(t *testing.T) {
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set("x-role", "admin")
@@ -89,60 +107,4 @@ func TestAuthAdmin_Error(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusForbidden, rec.Code)
-}
-
-func TestAuthOwnerTask_Manager(t *testing.T) {
-	e := echo.New()
-	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	ctx := e.NewContext(req, rec)
-	ctx.Set(RoleContext, "manager")
-	ctx.Set(UserContext, "1")
-	ctx.QueryParams().Set("user", "99")
-
-	err := AuthOwnerTask(func(ctx echo.Context) error {
-		return nil
-	})(ctx)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, rec.Code)
-}
-
-func TestAuthOwnerTask_Technician(t *testing.T) {
-	e := echo.New()
-	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	ctx := e.NewContext(req, rec)
-	ctx.Set(RoleContext, "technician")
-	ctx.Set(UserContext, "1")
-	ctx.QueryParams().Set("user", "1")
-
-	err := AuthOwnerTask(func(ctx echo.Context) error {
-		return nil
-	})(ctx)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, rec.Code)
-}
-
-func TestAuthOwnerTask_Error(t *testing.T) {
-	e := echo.New()
-	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	ctx := e.NewContext(req, rec)
-	ctx.Set(RoleContext, "technician")
-	ctx.Set(UserContext, "1")
-	ctx.QueryParams().Set("user", "99")
-
-	err := AuthOwnerTask(func(ctx echo.Context) error {
-		return nil
-	})(ctx)
-
-	response := &presenter.ErrorResponse{}
-	_ = json.Unmarshal(rec.Body.Bytes(), response)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusForbidden, rec.Code)
-	assert.Equal(t, "forbidden", *response.Error)
-	assert.Equal(t, "access to task not allowed", *response.Message)
 }
