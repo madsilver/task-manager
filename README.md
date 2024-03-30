@@ -72,10 +72,10 @@ kubectl get pods
 
 MySQL restore
 ```shell
-kubectl port-forward task-manager-mysql-<POD> 3306:3306
+kubectl exec -it task-manager-mysql-<pod> -- mysql -u silver -psilver silverlabs < schema.sql.sql
 ```
 ```shell
-mysql -u silver -h 127.0.0.1 -p db < scripts/db/schema.sql
+kubectl port-forward task-manager-mysql-<pod> 3306:3306
 ```
 
 ### Documentation

@@ -13,7 +13,7 @@ spec:
         app: task-manager-rabbitmq
     spec:
       containers:
-        - name: rabbitmq
+        - name: task-manager-rabbitmq
           image: rabbitmq:3-management-alpine
           env:
             - name: RABBITMQ_DEFAULT_USER

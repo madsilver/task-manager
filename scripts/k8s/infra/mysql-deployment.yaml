@@ -16,7 +16,7 @@ spec:
         - name: data
           emptyDir: {}
       containers:
-        - name: mysql
+        - name: task-manager-mysql
           image: mysql:latest
           env:
             - name: MYSQL_USER

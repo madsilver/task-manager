@@ -17,23 +17,25 @@ spec:
     spec:
       automountServiceAccountToken: false
       containers:
-        - name: task-manager-deployment
+        - name: task-manager
           image: madsilver/task-manager:1.0.0
+          imagePullPolicy: Always
           env:
             - name: MYSQL_HOST
               value: task-manager-mysql
-          imagePullPolicy: Always
+            - name: RABBITMQ_HOST
+              value: task-manager-rabbitmq
           ports:
             - containerPort: 8000
           resources:
             limits:
               cpu: 100m
-              memory: 100Mi
+              memory: 1000Mi
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: task-manager-deployment
+  name: task-manager
 spec:
   selector:
     app: task-manager
