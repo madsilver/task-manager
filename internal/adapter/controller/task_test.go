@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	mockController "github.com/madsilver/task-manager/internal/adapter/controller/mock"
 	"github.com/madsilver/task-manager/internal/entity"
+	"github.com/madsilver/task-manager/internal/infra/server/middleware"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -101,6 +102,7 @@ func TestTaskController_CreateTask(t *testing.T) {
 		mockRepo.EXPECT().Create(gomock.Any()).Return(errors.New("error")),
 	)
 	e := echo.New()
+	e.Validator = middleware.ConfigValidator()
 	ctx := e.NewContext(httptest.NewRequest(http.MethodPost, "/v1/tasks", nil), httptest.NewRecorder())
 	ctx.Request().Body = io.NopCloser(bytes.NewReader([]byte("{\"summary\": \"summary test 123\"}")))
 	ctx.Request().Header.Set("Content-Type", "application/json")
@@ -157,6 +159,7 @@ func TestTaskController_UpdateTask(t *testing.T) {
 	mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{UserID: 1}, nil)
 	mockRepo.EXPECT().Update(gomock.Any()).Return(nil)
 	e := echo.New()
+	e.Validator = middleware.ConfigValidator()
 	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
 	ctx.Request().Body = io.NopCloser(bytes.NewReader([]byte("{\"summary\": \"summary test 123\"}")))
 	ctx.Request().Header.Set("Content-Type", "application/json")
@@ -188,6 +191,7 @@ func TestTaskController_UpdateTask_NotFound(t *testing.T) {
 	mockRepo := mockController.NewMockRepository(ctrl)
 	mockRepo.EXPECT().FindByID(gomock.Any()).Return(nil, errors.New("error"))
 	e := echo.New()
+	e.Validator = middleware.ConfigValidator()
 	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
 	ctx.Request().Body = io.NopCloser(bytes.NewReader([]byte("{\"summary\": \"summary test 123\"}")))
 	ctx.Request().Header.Set("Content-Type", "application/json")
@@ -206,6 +210,7 @@ func TestTaskController_UpdateTask_Forbidden(t *testing.T) {
 	mockRepo := mockController.NewMockRepository(ctrl)
 	mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{UserID: 1}, nil)
 	e := echo.New()
+	e.Validator = middleware.ConfigValidator()
 	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
 	ctx.Request().Body = io.NopCloser(bytes.NewReader([]byte("{\"summary\": \"summary test 123\"}")))
 	ctx.Request().Header.Set("Content-Type", "application/json")
@@ -225,6 +230,7 @@ func TestTaskController_UpdateTask_Error(t *testing.T) {
 	mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{UserID: 1}, nil)
 	mockRepo.EXPECT().Update(gomock.Any()).Return(errors.New("error"))
 	e := echo.New()
+	e.Validator = middleware.ConfigValidator()
 	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
 	ctx.Request().Body = io.NopCloser(bytes.NewReader([]byte("{\"summary\": \"summary test 123\"}")))
 	ctx.Request().Header.Set("Content-Type", "application/json")

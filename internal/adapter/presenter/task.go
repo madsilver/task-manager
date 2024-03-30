@@ -8,5 +8,5 @@ type Task struct {
 }
 
 type TaskCreate struct {
-	Summary string `json:"summary"`
+	Summary string `json:"summary" validate:"required,max=2500"`
 }

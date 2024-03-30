@@ -104,8 +104,8 @@ func (c *TaskController) FindTaskByID(ctx echo.Context) error {
 // @Router /tasks [post]
 func (c *TaskController) CreateTask(ctx echo.Context) error {
 	body := &presenter.TaskCreate{}
-	if err := ctx.Bind(body); err != nil {
-		log.Info(err.Error())
+	_ = ctx.Bind(body)
+	if err := ctx.Validate(body); err != nil {
 		return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse(BadRequestMessage, err.Error()))
 	}
 	task := &entity.Task{
@@ -137,8 +137,8 @@ func (c *TaskController) CreateTask(ctx echo.Context) error {
 // @Router /tasks/{id} [patch]
 func (c *TaskController) UpdateTask(ctx echo.Context) error {
 	body := &presenter.TaskCreate{}
-	if err := ctx.Bind(body); err != nil {
-		log.Info(err.Error())
+	_ = ctx.Bind(body)
+	if err := ctx.Validate(body); err != nil {
 		return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse(BadRequestMessage, err.Error()))
 	}
 	param := ctx.Param("id")
