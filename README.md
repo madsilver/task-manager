@@ -29,6 +29,12 @@ summary from the task can contain personal information.
 | RABBITMQ_HOST     | 127.0.0.1  |                                         |
 | RABBITMQ_PORT     | 5672       |                                         |
 
+### Roles
+| user       | role       |
+|------------|------------|
+| Manager    | manager    |
+| Technician | technician |
+
 ## Usage
 ### Start using it
 ```shell
@@ -37,6 +43,22 @@ make run
 
 ### Makefile
 Use ``make help`` or only ``make`` to check all the available commands.
+
+### HTTP Requests
+The x-user-id and x-role headers are required. The API must have a gateway responsible for user authentication.
+The gateway is expected to fill the headers with user data.
+
+| header    | required | description    |
+|-----------|----------|----------------|
+| x-user-id | yes      | user ID        |
+| x-role    | yes      | user role      |
+
+#### Example:
+```shell
+curl --location 'http://localhost:8000/v1/tasks' \
+    --header 'x-user-id: 1' \
+    --header 'x-role: manager'
+```
 
 ### Documentation
 1. [Docs](docs)
