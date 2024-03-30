@@ -10,29 +10,21 @@ help: ## Display help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "$(GREEN)%s\t\t$(DEFAULT)%s\n", $$1, $$2}'
 
-run: ## Run application
-	@docker-compose up -d
+run: ## Run application local
+	@docker-compose up -d mysql rabbitmq
+	@sleep 5
 	@go run cmd/api/main.go
-
-tidy: ## Downloads go dependencies
-	@go mod tidy
-
-vendor: ## Copy of all packages needed
-	@go mod vendor
 
 test: ## Run the tests of the project
 	@go test -covermode=atomic -coverprofile=coverage.out  ./...
 
-test-v: ## Run the tests of the project (verbose)
-	@go test -v -cover -p=1 -covermode=count -coverprofile=coverage.out  ./...
-
 api-doc: ## Build swagger
 	@go run github.com/swaggo/swag/cmd/swag init -g ./internal/infra/server/server.go
 
-docker: ## Build docker image
+image: ## Build docker image
 	@docker build -t task-manager .
 
-docker-run: ## Run docker container
+docker: ## Run docker container
 	@docker run -d --rm --net=host task-manager
 
 mock: ## Build mocks

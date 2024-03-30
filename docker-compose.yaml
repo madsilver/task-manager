@@ -14,6 +14,7 @@ services:
       MYSQL_DATABASE: silverlabs
     ports:
       - "3306:3306"
+    network_mode: host
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -24,3 +25,17 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    network_mode: host
+
+  api:
+    build: .
+    container_name: task-manager-api
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      mysql:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    network_mode: host
