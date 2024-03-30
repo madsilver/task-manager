@@ -30,5 +30,5 @@ docker: ## Run docker container
 mock: ## Build mocks
 	@go get github.com/golang/mock/gomock
 	@go get github.com/golang/mock/mockgen@v1.6.0
-	@~/go/bin/mockgen -source=internal/adapter/controller/task.go -destination=internal/adapter/controller/mock/task.go
+	@~/go/bin/mockgen -source=internal/adapter/controller/core.go -destination=internal/adapter/controller/mock/core.go
 	@~/go/bin/mockgen -source=internal/adapter/repository/mysql/task.go -destination=internal/adapter/repository/mysql/mock/task.go

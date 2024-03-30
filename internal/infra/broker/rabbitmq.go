@@ -46,6 +46,29 @@ func (r *RabbitMQ) Publish(data []byte) error {
 	return nil
 }
 
+func (r *RabbitMQ) Consume() {
+	err := r.Channel.Qos(4, 0, false)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	msgs, err := r.Channel.Consume(QUEUE, "", false, false, false, false, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var forever chan struct{}
+
+	go func() {
+		for msg := range msgs {
+			log.Info(string(msg.Body))
+			_ = msg.Ack(true)
+		}
+	}()
+
+	<-forever
+}
+
 func getDSN() string {
 	return fmt.Sprintf("amqp://%s:%s@%s:%s",
 		env.GetString("RABBITMQ_USER", "silver"),
