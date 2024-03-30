@@ -15,16 +15,20 @@ spec:
         app: task-manager
         version: 1.0.0
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: task-manager-deployment
           image: madsilver/task-manager:1.0.0
           env:
             - name: MYSQL_HOST
               value: task-manager-mysql
-#          command: ["./task-manager"]
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
 ---
 apiVersion: v1
 kind: Service
