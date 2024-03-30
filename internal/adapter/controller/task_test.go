@@ -285,3 +285,73 @@ func TestTaskController_DeleteTask_Error(t *testing.T) {
 
 	assert.Equal(t, http.StatusInternalServerError, ctx.Response().Status)
 }
+
+func TestTaskController_CloseTask(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockRepo := mockController.NewMockRepository(ctrl)
+	mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{UserID: 1}, nil)
+	mockRepo.EXPECT().Update(gomock.Any()).Return(nil)
+	e := echo.New()
+	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1/close", nil), httptest.NewRecorder())
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("1")
+	ctx.Set("user", uint64(1))
+	controller := NewTaskController(mockRepo)
+
+	_ = controller.CloseTask(ctx)
+
+	assert.Equal(t, http.StatusOK, ctx.Response().Status)
+}
+
+func TestTaskController_CloseTask_Error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockRepo := mockController.NewMockRepository(ctrl)
+	mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{UserID: 1}, nil)
+	mockRepo.EXPECT().Update(gomock.Any()).Return(errors.New("error"))
+	e := echo.New()
+	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("1")
+	ctx.Set("user", uint64(1))
+	controller := NewTaskController(mockRepo)
+
+	_ = controller.CloseTask(ctx)
+
+	assert.Equal(t, http.StatusInternalServerError, ctx.Response().Status)
+}
+
+func TestTaskController_CloseTask_NotFound(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockRepo := mockController.NewMockRepository(ctrl)
+	mockRepo.EXPECT().FindByID(gomock.Any()).Return(nil, errors.New("error"))
+	e := echo.New()
+	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("1")
+	ctx.Set("user", uint64(1))
+	controller := NewTaskController(mockRepo)
+
+	_ = controller.CloseTask(ctx)
+
+	assert.Equal(t, http.StatusNotFound, ctx.Response().Status)
+}
+
+func TestTaskController_CloseTask_Forbidden(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockRepo := mockController.NewMockRepository(ctrl)
+	mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{UserID: 1}, nil)
+	e := echo.New()
+	ctx := e.NewContext(httptest.NewRequest(http.MethodPatch, "/v1/tasks/1", nil), httptest.NewRecorder())
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("1")
+	ctx.Set("user", uint64(99))
+	controller := NewTaskController(mockRepo)
+
+	_ = controller.CloseTask(ctx)
+
+	assert.Equal(t, http.StatusForbidden, ctx.Response().Status)
+}
