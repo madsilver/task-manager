@@ -11,8 +11,6 @@ services:
       MYSQL_USER: silver
       MYSQL_PASSWORD: silver
       MYSQL_DATABASE: silverlabs
-    ports:
-      - "3306:3306"
     network_mode: host
 
   rabbitmq:
@@ -21,17 +19,12 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=silver
       - RABBITMQ_DEFAULT_PASS=silver
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     network_mode: host
 
   api:
     build: .
     container_name: task-manager-api
     restart: always
-    ports:
-      - "8000:8000"
     depends_on:
       mysql:
         condition: service_started
