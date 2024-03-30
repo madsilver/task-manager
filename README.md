@@ -69,13 +69,14 @@ Verify the pods are running properly as expected after applying the kubectl appl
 ```shell
 kubectl get pods
 ```
+Exposing the application port
+```shell
+kubectl port-forward task-manager-<pod> 8000:8000
+```
 
 MySQL restore
 ```shell
 kubectl exec -it task-manager-mysql-<pod> -- mysql -u silver -psilver silverlabs < schema.sql.sql
-```
-```shell
-kubectl port-forward task-manager-mysql-<pod> 3306:3306
 ```
 
 ### Documentation
