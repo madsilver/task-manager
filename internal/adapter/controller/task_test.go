@@ -76,8 +76,8 @@ func TestTaskController_FindTasksByID(t *testing.T) {
 			statusCode: http.StatusOK,
 		},
 		{
-			name:       "should return internal server error",
-			statusCode: http.StatusInternalServerError,
+			name:       "should return not found error",
+			statusCode: http.StatusNotFound,
 			err:        errors.New("error"),
 		},
 	}

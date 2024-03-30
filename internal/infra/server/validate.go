@@ -5,6 +5,7 @@ import (
 	"github.com/madsilver/task-manager/internal/adapter/presenter"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -16,6 +17,9 @@ const (
 
 func ValidateHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		if strings.HasPrefix(ctx.Request().URL.String(), "/swagger") {
+			return next(ctx)
+		}
 		user := ctx.Request().Header.Get("x-user-id")
 		if user == "" {
 			return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse("x-user-id header missing", ""))

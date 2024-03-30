@@ -26,6 +26,9 @@ test: ## Run the tests of the project
 test-v: ## Run the tests of the project (verbose)
 	@go test -v -cover -p=1 -covermode=count -coverprofile=coverage.out  ./...
 
+api-doc: ## Build swagger
+	@go run github.com/swaggo/swag/cmd/swag init -g ./internal/infra/server/server.go
+
 mock: ## Build mocks
 	@go get github.com/golang/mock/gomock
 	@go get github.com/golang/mock/mockgen@v1.6.0
