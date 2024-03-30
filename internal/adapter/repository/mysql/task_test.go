@@ -78,7 +78,7 @@ func TestTaskRepository_Update(t *testing.T) {
 	defer ctrl.Finish()
 	mockDB := mockMysql.NewMockDB(ctrl)
 	mockDB.EXPECT().
-		Update(gomock.Any(), gomock.Any(), gomock.Any()).
+		Update(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil)
 	repos := NewTaskRepository(mockDB)
 

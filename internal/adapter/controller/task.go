@@ -6,6 +6,7 @@ import (
 	"github.com/madsilver/task-manager/internal/adapter/presenter"
 	"github.com/madsilver/task-manager/internal/entity"
 	"net/http"
+	"time"
 )
 
 type Repository interface {
@@ -105,4 +106,25 @@ func (c *TaskController) DeleteTask(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
 	}
 	return ctx.JSON(http.StatusOK, nil)
+}
+
+func (c *TaskController) CloseTask(ctx echo.Context) error {
+	param := ctx.Param("id")
+	task, err := c.repository.FindByID(param)
+	if err != nil {
+		return ctx.JSON(http.StatusNotFound, presenter.NewErrorResponse("task not found", ""))
+	}
+
+	if task.UserID != ctx.Get("user").(uint64) {
+		return ctx.JSON(http.StatusForbidden, presenter.NewErrorResponse("operation not allowed", ""))
+	}
+
+	now := time.Now().Format("2006-01-02 15:04:05")
+	task.Date = &now
+	err = c.repository.Update(task)
+	if err != nil {
+		log.Error(err.Error())
+		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
+	}
+	return ctx.JSON(http.StatusOK, presenter.PopulateTask(task))
 }

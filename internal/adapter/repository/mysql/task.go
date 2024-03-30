@@ -59,8 +59,8 @@ func (r *TaskRepository) Create(task *entity.Task) error {
 }
 
 func (r *TaskRepository) Update(task *entity.Task) error {
-	query := "UPDATE Tasks SET Summary = ? WHERE ID = ?"
-	return r.db.Update(query, &task.Summary, &task.ID)
+	query := "UPDATE Tasks SET Summary = ?, Date = ? WHERE ID = ?"
+	return r.db.Update(query, &task.Summary, &task.Date, &task.ID)
 }
 
 func (r *TaskRepository) Delete(id any) error {
