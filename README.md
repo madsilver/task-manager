@@ -14,8 +14,12 @@
 | MYSQL_USER        | silver     |                                         |
 | MYSQL_PASSWORD    | silver     |                                         |
 | MYSQL_DATABASE    | silverlabs |                                         |
-| MYSQL_HOST        | localhost  |                                         |
+| MYSQL_HOST        | 127.0.0.1  |                                         |
 | MYSQL_PORT        | 3306       |                                         |
+| RABBITMQ_USER     | silver     |                                         |
+| RABBITMQ_PASSWORD | silver     |                                         |
+| RABBITMQ_HOST     | 127.0.0.1  |                                         |
+| RABBITMQ_PORT     | 5672       |                                         |
 
 ## Usage
 ### Start using it
@@ -25,3 +29,8 @@ make run
 
 ### Makefile
 Use ``make help`` or only ``make`` to check all the available commands.
+
+### Documentation
+1. [Docs](docs)
+2. [Swagger](docs/swagger.json)
+3. [Swagger Panel](http://localhost:8000/swagger/index.html)
