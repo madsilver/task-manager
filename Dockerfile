@@ -13,6 +13,6 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /app/task-manager .
 EXPOSE 8000
-RUN addgroup -S $DOCKER_USER && adduser -S $DOCKER_USER -G $DOCKER_USER
+RUN addgroup -S "$DOCKER_USER" && adduser -S "$DOCKER_USER" -G "$DOCKER_USER"
 USER $DOCKER_USER
 CMD ["./task-manager"]
