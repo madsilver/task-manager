@@ -40,6 +40,7 @@ spec:
             limits:
               cpu: 100m
               memory: 64Mi
+              ephemeral-storage: "2Gi"
           volumeMounts:
             - name: data
               mountPath: /var/lib/mysql/
