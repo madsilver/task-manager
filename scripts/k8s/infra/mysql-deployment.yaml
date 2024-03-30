@@ -12,6 +12,7 @@ spec:
       labels:
         app: task-manager-mysql
     spec:
+      automountServiceAccountToken: false
       volumes:
         - name: data
           emptyDir: {}
@@ -35,6 +36,10 @@ spec:
               value: silverlabs
           ports:
             - containerPort: 3306
+          resources:
+            limits:
+              cpu: 100m
+              memory: 64Mi
           volumeMounts:
             - name: data
               mountPath: /var/lib/mysql/
