@@ -5,7 +5,8 @@ RUN go mod download
 COPY ./cmd ./cmd
 COPY ./docs ./docs
 COPY ./internal ./internal
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o task-manager cmd/api/main.go
+#RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o task-manager cmd/api/main.go
+RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o task-manager cmd/api/main.go
 
 FROM alpine:3.17
 ARG DOCKER_USER=default_user
