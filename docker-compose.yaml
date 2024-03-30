@@ -14,3 +14,13 @@ services:
       MYSQL_DATABASE: silverlabs
     ports:
       - "3306:3306"
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: task-manager-rabbimq
+    environment:
+      - RABBITMQ_DEFAULT_USER=silver
+      - RABBITMQ_DEFAULT_PASS=silver
+    ports:
+      - "5672:5672"
+      - "15672:15672"

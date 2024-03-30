@@ -105,3 +105,40 @@ func (mr *MockRepositoryMockRecorder) Update(task interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockRepository)(nil).Update), task)
 }
+
+// MockBroker is a mock of Broker interface.
+type MockBroker struct {
+	ctrl     *gomock.Controller
+	recorder *MockBrokerMockRecorder
+}
+
+// MockBrokerMockRecorder is the mock recorder for MockBroker.
+type MockBrokerMockRecorder struct {
+	mock *MockBroker
+}
+
+// NewMockBroker creates a new mock instance.
+func NewMockBroker(ctrl *gomock.Controller) *MockBroker {
+	mock := &MockBroker{ctrl: ctrl}
+	mock.recorder = &MockBrokerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBroker) EXPECT() *MockBrokerMockRecorder {
+	return m.recorder
+}
+
+// Publish mocks base method.
+func (m *MockBroker) Publish(data []byte) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Publish", data)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Publish indicates an expected call of Publish.
+func (mr *MockBrokerMockRecorder) Publish(data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Publish", reflect.TypeOf((*MockBroker)(nil).Publish), data)
+}

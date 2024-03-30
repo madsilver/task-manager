@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	"github.com/madsilver/task-manager/internal/adapter/presenter"
@@ -23,13 +24,19 @@ type Repository interface {
 	Delete(id any) error
 }
 
-type TaskController struct {
-	repository Repository
+type Broker interface {
+	Publish(data []byte) error
 }
 
-func NewTaskController(repository Repository) *TaskController {
+type TaskController struct {
+	repository Repository
+	broker     Broker
+}
+
+func NewTaskController(repository Repository, broker Broker) *TaskController {
 	return &TaskController{
 		repository,
+		broker,
 	}
 }
 
@@ -214,5 +221,21 @@ func (c *TaskController) CloseTask(ctx echo.Context) error {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
 	}
+
+	go func() {
+		_ = c.Notify(task)
+	}()
+
 	return ctx.JSON(http.StatusOK, presenter.PopulateTask(task))
+}
+
+func (c *TaskController) Notify(task *entity.Task) (err error) {
+	message := fmt.Sprintf("The tech %d performed the task %s on date %s", task.UserID, task.Summary, *task.Date)
+	err = c.broker.Publish([]byte(message))
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	log.Info("notification sent successfully")
+	return
 }

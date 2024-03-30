@@ -29,6 +29,12 @@ test-v: ## Run the tests of the project (verbose)
 api-doc: ## Build swagger
 	@go run github.com/swaggo/swag/cmd/swag init -g ./internal/infra/server/server.go
 
+docker: ## Build docker image
+	@docker build -t task-manager .
+
+docker-run: ## Run docker container
+	@docker run -d --rm --net=host task-manager
+
 mock: ## Build mocks
 	@go get github.com/golang/mock/gomock
 	@go get github.com/golang/mock/mockgen@v1.6.0
