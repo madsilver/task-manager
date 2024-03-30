@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: task-manager-deployment
+  name: task-manager
   labels:
     app: task-manager
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: task-manager
@@ -13,13 +13,28 @@ spec:
     metadata:
       labels:
         app: task-manager
+        version: 1.0.0
     spec:
       containers:
         - name: task-manager-deployment
           image: madsilver/task-manager:1.0.0
-          resources:
-            requests:
-              cpu: "100m"
-          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_HOST
+              value: task-manager-mysql
+#          command: ["./task-manager"]
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-manager-deployment
+spec:
+  selector:
+    app: task-manager
+  ports:
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+  type: LoadBalancer

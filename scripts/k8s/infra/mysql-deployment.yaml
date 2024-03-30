@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-manager-mysql
+spec:
+  selector:
+    matchLabels:
+      app: task-manager-mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: task-manager-mysql
+    spec:
+      volumes:
+        - name: data
+          emptyDir: {}
+      containers:
+        - name: mysql
+          image: mysql:latest
+          env:
+            - name: MYSQL_USER
+              value: silver
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: MYSQL_DATABASE
+              value: silverlabs
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-manager-mysql
+spec:
+  selector:
+    app: task-manager-mysql
+  ports:
+    - port: 3306

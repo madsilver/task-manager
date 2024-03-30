@@ -59,6 +59,24 @@ curl --location 'http://localhost:8000/v1/tasks' \
     --header 'x-user-id: 1' \
     --header 'x-role: manager'
 ```
+### Kubernetes
+Apply the manifest files with the following command.
+```shell
+sh deploy.sh -i
+sh deploy.sh -a
+```
+Verify the pods are running properly as expected after applying the kubectl apply commands.
+```shell
+kubectl get pods
+```
+
+MySQL restore
+```shell
+kubectl port-forward task-manager-mysql-<POD> 3306:3306
+```
+```shell
+mysql -u silver -h 127.0.0.1 -p db < scripts/db/schema.sql
+```
 
 ### Documentation
 1. [Docs](docs)
