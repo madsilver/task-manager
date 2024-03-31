@@ -3,31 +3,38 @@
 usage() {
     echo -ne "Usage: ./deploy [option]
     options:
-        -i : infrastructure deployment
-        -a : applications deployment\n"
+        -d : infra and application deployment
+        -a : abort\n"
     exit
 }
 
-infraDeploy() {
-    kubectl apply -f infra/mysql-secrets.yaml
-    kubectl apply -f infra/mysql-deployment.yaml
-    kubectl apply -f infra/rabbitmq-secrets.yaml
-    kubectl apply -f infra/rabbitmq-deployment.yaml
+deploy() {
+  kubectl apply -f infra/mysql-secrets.yaml
+  kubectl apply -f infra/rabbitmq-secrets.yaml
+  kubectl apply -f infra/mysql-deployment.yaml
+  kubectl apply -f infra/rabbitmq-deployment.yaml
+  kubectl apply -f app/api-deployment.yaml
+  kubectl apply -f app/worker-deployment.yaml
 }
 
-appDeploy() {
-  kubectl apply -f deployment.yaml
+abort() {
+  kubectl delete -f infra/mysql-secrets.yaml
+  kubectl delete -f infra/rabbitmq-secrets.yaml
+  kubectl delete -f infra/mysql-deployment.yaml
+  kubectl delete -f infra/rabbitmq-deployment.yaml
+  kubectl delete -f app/api-deployment.yaml
+  kubectl delete -f app/worker-deployment.yaml
 }
 
 if [ "$@" ]; then
-    while getopts "iah" opt; do
+    while getopts "dah" opt; do
         case $opt in
-            i)
-                infraDeploy
+            d)
+                deploy
                 shift
                 ;;
             a)
-                appDeploy
+                abort
                 shift
                 ;;
             h)
