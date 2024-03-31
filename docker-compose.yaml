@@ -31,3 +31,12 @@ services:
       rabbitmq:
         condition: service_started
     network_mode: host
+
+  worker:
+    build: ./DockerfileWorker
+    container_name: task-manager-worker
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    network_mode: host

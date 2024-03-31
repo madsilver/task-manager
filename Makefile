@@ -21,11 +21,15 @@ test: ## Run the tests of the project
 api-doc: ## Build swagger
 	@go run github.com/swaggo/swag/cmd/swag init -g ./internal/infra/server/server.go
 
-image: ## Build docker image
+img-api: ## Build api docker image
 	@docker build -t task-manager .
+
+img-wrk: ## Build worker docker image
+	@docker build -t task-manager-worker -f DockerfileWorker .
 
 docker: ## Run docker container
 	@docker run -d --rm --net=host task-manager
+	@docker run -d --rm --net=host task-manager-worker
 
 mock: ## Build mocks
 	@go get github.com/golang/mock/gomock
