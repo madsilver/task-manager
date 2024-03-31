@@ -222,8 +222,6 @@ func (c *TaskController) Notify(task *entity.Task) (err error) {
 	err = c.broker.Publish([]byte(message))
 	if err != nil {
 		log.Error(err.Error())
-		return
 	}
-	log.Info("notification sent successfully")
 	return
 }
