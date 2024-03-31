@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app: task-manager
-        version: 1.0.0
+        version: 1.0.1
     spec:
       automountServiceAccountToken: false
       containers:
@@ -30,7 +30,7 @@ spec:
           resources:
             limits:
               cpu: 100m
-              memory: 64Mi
+              memory: 256Mi
 ---
 apiVersion: v1
 kind: Service
