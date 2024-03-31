@@ -11,9 +11,7 @@ help: ## Display help screen
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "$(GREEN)%s\t\t$(DEFAULT)%s\n", $$1, $$2}'
 
 run: ## Run application local
-	@docker-compose up -d mysql rabbitmq
-	@sleep 5
-	@go run cmd/api/main.go
+	@docker-compose up -d
 
 test: ## Run the tests of the project
 	@go test -covermode=atomic -coverprofile=coverage.out  ./...
