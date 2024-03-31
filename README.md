@@ -62,8 +62,7 @@ curl --location 'http://localhost:8000/v1/tasks' \
 ### Kubernetes
 Apply the manifest files with the following command.
 ```shell
-sh deploy.sh -i
-sh deploy.sh -a
+sh deploy.sh -d
 ```
 Verify the pods are running properly as expected after applying the kubectl apply commands.
 ```shell
