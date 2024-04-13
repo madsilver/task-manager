@@ -5,7 +5,7 @@ import (
 	"github.com/madsilver/task-manager/internal/adapter/controller"
 	"github.com/madsilver/task-manager/internal/adapter/repository/mysql"
 	"github.com/madsilver/task-manager/internal/infra/broker"
-	mysqlDB "github.com/madsilver/task-manager/internal/infra/db/mysql"
+	"github.com/madsilver/task-manager/internal/infra/db"
 	"github.com/madsilver/task-manager/internal/infra/server"
 )
 
@@ -14,7 +14,7 @@ func main() {
 
 	manager := &server.Manager{
 		TaskController: controller.NewTaskController(
-			mysql.NewTaskRepository(mysqlDB.NewMysqlDB()),
+			mysql.NewTaskRepository(db.NewMysqlDB()),
 			broker.NewRabbitMQ()),
 	}
 
