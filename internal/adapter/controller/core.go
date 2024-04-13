@@ -1,6 +1,9 @@
 package controller
 
-import "github.com/madsilver/task-manager/internal/entity"
+import (
+	"context"
+	"github.com/madsilver/task-manager/internal/entity"
+)
 
 type Repository interface {
 	FindAll(args any) ([]*entity.Task, error)
@@ -11,6 +14,6 @@ type Repository interface {
 }
 
 type Broker interface {
-	Publish(data []byte) error
+	Publish(ctx context.Context, data []byte) error
 	Consume()
 }

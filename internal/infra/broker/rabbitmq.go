@@ -1,6 +1,7 @@
 package broker
 
 import (
+	"context"
 	"fmt"
 	"github.com/labstack/gommon/log"
 	"github.com/madsilver/task-manager/internal/infra/env"
@@ -36,9 +37,9 @@ func NewRabbitMQ() *RabbitMQ {
 	}
 }
 
-func (r *RabbitMQ) Publish(data []byte) error {
+func (r *RabbitMQ) Publish(ctx context.Context, data []byte) error {
 	message := amqp091.Publishing{ContentType: "text/plain", Body: data}
-	err := r.Channel.Publish("", QUEUE, false, false, message)
+	err := r.Channel.PublishWithContext(ctx, "", QUEUE, false, false, message)
 	if err != nil {
 		log.Error(err)
 		return err
