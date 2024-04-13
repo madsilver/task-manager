@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -219,7 +220,7 @@ func (c *TaskController) CloseTask(ctx echo.Context) error {
 
 func (c *TaskController) Notify(task *entity.Task) (err error) {
 	message := fmt.Sprintf("The tech %d performed the task %s on date %s", task.UserID, task.Summary, *task.Date)
-	err = c.broker.Publish([]byte(message))
+	err = c.broker.Publish(context.Background(), []byte(message))
 	if err != nil {
 		log.Error(err.Error())
 	}
