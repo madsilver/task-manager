@@ -1,11 +1,17 @@
 package server
 
 import (
+	"context"
+	"errors"
 	"github.com/labstack/echo/v4"
 	_ "github.com/madsilver/task-manager/docs"
 	"github.com/madsilver/task-manager/internal/infra/env"
 	"github.com/madsilver/task-manager/internal/infra/server/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
 )
 
 type Server struct {
@@ -42,5 +48,20 @@ func (s *Server) Start() {
 	e.PATCH("/v1/tasks/:id/close", s.manager.TaskController.CloseTask, AuthRole(TechRole))
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	e.Logger.Fatal(e.Start(":" + env.GetString("SERVER_PORT", "8000")))
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
+	go func() {
+		host := ":" + env.GetString("SERVER_PORT", "8000")
+		if err := e.Start(host); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			e.Logger.Fatal(err)
+		}
+	}()
+
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
 }
