@@ -1,28 +1,21 @@
 package mysql
 
 import (
+	"github.com/madsilver/task-manager/internal/adapter/core"
 	"github.com/madsilver/task-manager/internal/entity"
 )
 
-type DB interface {
-	Query(query string, args any, fn func(scan func(dest ...any) error) error) error
-	QueryRow(query string, args any, fn func(scan func(dest ...any) error) error) error
-	Save(query string, args ...any) (any, error)
-	Update(query string, args ...any) error
-	Delete(query string, args any) error
+type taskRepository struct {
+	db core.DB
 }
 
-type TaskRepository struct {
-	db DB
-}
-
-func NewTaskRepository(db DB) *TaskRepository {
-	return &TaskRepository{
+func NewTaskRepository(db core.DB) core.TaskRepository {
+	return &taskRepository{
 		db,
 	}
 }
 
-func (r *TaskRepository) FindAll(args any) ([]*entity.Task, error) {
+func (r *taskRepository) FindAll(args any) ([]*entity.Task, error) {
 	query := "SELECT * FROM Tasks"
 	if args != nil {
 		query = query + " WHERE UserID = ?"
@@ -39,7 +32,7 @@ func (r *TaskRepository) FindAll(args any) ([]*entity.Task, error) {
 	return tasks, err
 }
 
-func (r *TaskRepository) FindByID(args any) (*entity.Task, error) {
+func (r *taskRepository) FindByID(args any) (*entity.Task, error) {
 	query := "SELECT * FROM Tasks WHERE ID = ?"
 	task := &entity.Task{}
 	err := r.db.QueryRow(query, args, func(scan func(dest ...any) error) error {
@@ -48,7 +41,7 @@ func (r *TaskRepository) FindByID(args any) (*entity.Task, error) {
 	return task, err
 }
 
-func (r *TaskRepository) Create(task *entity.Task) error {
+func (r *taskRepository) Create(task *entity.Task) error {
 	query := "INSERT INTO Tasks (UserID, Summary) VALUES (?,?)"
 	res, err := r.db.Save(query, &task.UserID, &task.Summary)
 	if err != nil {
@@ -58,12 +51,12 @@ func (r *TaskRepository) Create(task *entity.Task) error {
 	return nil
 }
 
-func (r *TaskRepository) Update(task *entity.Task) error {
+func (r *taskRepository) Update(task *entity.Task) error {
 	query := "UPDATE Tasks SET Summary = ?, Date = ? WHERE ID = ?"
 	return r.db.Update(query, &task.Summary, &task.Date, &task.ID)
 }
 
-func (r *TaskRepository) Delete(id any) error {
+func (r *taskRepository) Delete(id any) error {
 	query := "DELETE FROM Tasks WHERE ID = ?"
 	return r.db.Delete(query, id)
 }

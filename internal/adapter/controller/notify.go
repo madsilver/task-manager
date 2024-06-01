@@ -1,15 +1,17 @@
 package controller
 
+import "github.com/madsilver/task-manager/internal/adapter/core"
+
 type NotifyController struct {
-	broker Broker
+	service core.NotifyService
 }
 
-func NewNotifyController(broker Broker) *NotifyController {
+func NewNotifyController(service core.NotifyService) *NotifyController {
 	return &NotifyController{
-		broker,
+		service,
 	}
 }
 
 func (c *NotifyController) Listen() {
-	c.broker.Consume()
+	c.service.Listen()
 }

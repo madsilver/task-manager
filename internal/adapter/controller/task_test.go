@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
-	mockController "github.com/madsilver/task-manager/internal/adapter/controller/mock"
+	mockController "github.com/madsilver/task-manager/internal/adapter/core/mock"
 	"github.com/madsilver/task-manager/internal/entity"
 	"github.com/madsilver/task-manager/internal/infra/server/middleware"
 	"github.com/stretchr/testify/assert"
@@ -19,7 +19,7 @@ import (
 func TestTaskController_FindTasks(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockRepo := mockController.NewMockRepository(ctrl)
+	svc := mockController.NewMockTaskService(ctrl)
 	e := echo.New()
 	ctxManager := e.NewContext(httptest.NewRequest(http.MethodGet, "/v1/tasks", nil), httptest.NewRecorder())
 	ctxManager.Set("role", "manager")
@@ -49,10 +49,10 @@ func TestTaskController_FindTasks(t *testing.T) {
 			err:        errors.New("error"),
 		},
 	}
-	c := NewTaskController(mockRepo, nil)
+	c := NewTaskController(svc)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockRepo.EXPECT().FindAll(gomock.Any()).Return([]*entity.Task{}, tt.err)
+			svc.EXPECT().FindTasks(gomock.Any()).Return([]*entity.Task{}, tt.err)
 			_ = c.FindTasks(tt.ctx)
 			assert.Equal(t, tt.statusCode, tt.ctx.Response().Status)
 		})
@@ -62,7 +62,7 @@ func TestTaskController_FindTasks(t *testing.T) {
 func TestTaskController_FindTasksByID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockRepo := mockController.NewMockRepository(ctrl)
+	svc := mockController.NewMockTaskService(ctrl)
 	e := echo.New()
 	ctx := e.NewContext(httptest.NewRequest(http.MethodGet, "/v1/tasks", nil), httptest.NewRecorder())
 	ctx.SetParamNames("id")
@@ -83,10 +83,10 @@ func TestTaskController_FindTasksByID(t *testing.T) {
 			err:        errors.New("error"),
 		},
 	}
-	c := NewTaskController(mockRepo, nil)
+	c := NewTaskController(svc)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockRepo.EXPECT().FindByID(gomock.Any()).Return(&entity.Task{}, tt.err)
+			svc.EXPECT().FindTaskByID(gomock.Any()).Return(&entity.Task{}, tt.err)
 			_ = c.FindTaskByID(ctx)
 			assert.Equal(t, tt.statusCode, ctx.Response().Status)
 		})
@@ -96,10 +96,10 @@ func TestTaskController_FindTasksByID(t *testing.T) {
 func TestTaskController_CreateTask(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockRepo := mockController.NewMockRepository(ctrl)
+	svc := mockController.NewMockTaskService(ctrl)
 	gomock.InOrder(
-		mockRepo.EXPECT().Create(gomock.Any()).Return(nil),
-		mockRepo.EXPECT().Create(gomock.Any()).Return(errors.New("error")),
+		svc.EXPECT().CreateTask(gomock.Any(), gomock.Any()).Return(nil),
+		svc.EXPECT().CreateTask(gomock.Any(), gomock.Any()).Return(errors.New("error")),
 	)
 	e := echo.New()
 	e.Validator = middleware.ConfigValidator()

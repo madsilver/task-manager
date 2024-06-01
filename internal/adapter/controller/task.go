@@ -1,14 +1,11 @@
 package controller
 
 import (
-	"context"
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
+	"github.com/madsilver/task-manager/internal/adapter/core"
 	"github.com/madsilver/task-manager/internal/adapter/presenter"
-	"github.com/madsilver/task-manager/internal/entity"
 	"net/http"
-	"time"
 )
 
 const (
@@ -18,14 +15,12 @@ const (
 )
 
 type TaskController struct {
-	repository Repository
-	broker     Broker
+	service core.TaskService
 }
 
-func NewTaskController(repository Repository, broker Broker) *TaskController {
+func NewTaskController(service core.TaskService) *TaskController {
 	return &TaskController{
-		repository,
-		broker,
+		service,
 	}
 }
 
@@ -42,11 +37,7 @@ func NewTaskController(repository Repository, broker Broker) *TaskController {
 // @Failure 500 {object} presenter.ErrorResponse
 // @Router /tasks [get]
 func (c *TaskController) FindTasks(ctx echo.Context) error {
-	var arg any
-	if ctx.Get("role") == "technician" {
-		arg = ctx.Get("user").(uint64)
-	}
-	tasks, err := c.repository.FindAll(arg)
+	tasks, err := c.service.FindTasks(ctx)
 	if err != nil {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
@@ -68,8 +59,7 @@ func (c *TaskController) FindTasks(ctx echo.Context) error {
 // @Failure 404 {object} presenter.ErrorResponse
 // @Router /tasks/{id} [get]
 func (c *TaskController) FindTaskByID(ctx echo.Context) error {
-	param := ctx.Param("id")
-	task, err := c.repository.FindByID(param)
+	task, err := c.service.FindTaskByID(ctx)
 	if err != nil {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusNotFound, presenter.NewErrorResponse(TaskNotFoundMessage, ""))
@@ -97,11 +87,7 @@ func (c *TaskController) CreateTask(ctx echo.Context) error {
 	if err := ctx.Validate(body); err != nil {
 		return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse(BadRequestMessage, err.Error()))
 	}
-	task := &entity.Task{
-		UserID:  ctx.Get("user").(uint64),
-		Summary: body.Summary,
-	}
-	err := c.repository.Create(task)
+	task, err := c.service.CreateTask(ctx, body)
 	if err != nil {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
@@ -130,8 +116,7 @@ func (c *TaskController) UpdateTask(ctx echo.Context) error {
 	if err := ctx.Validate(body); err != nil {
 		return ctx.JSON(http.StatusBadRequest, presenter.NewErrorResponse(BadRequestMessage, err.Error()))
 	}
-	param := ctx.Param("id")
-	task, err := c.repository.FindByID(param)
+	task, err := c.service.FindTaskByID(ctx)
 	if err != nil {
 		return ctx.JSON(http.StatusNotFound, presenter.NewErrorResponse(TaskNotFoundMessage, ""))
 	}
@@ -141,7 +126,7 @@ func (c *TaskController) UpdateTask(ctx echo.Context) error {
 	}
 
 	task.Summary = body.Summary
-	err = c.repository.Update(task)
+	err = c.service.UpdateTask(task)
 	if err != nil {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
@@ -164,13 +149,12 @@ func (c *TaskController) UpdateTask(ctx echo.Context) error {
 // @Failure 500 {object} presenter.ErrorResponse
 // @Router /tasks/{id} [delete]
 func (c *TaskController) DeleteTask(ctx echo.Context) error {
-	param := ctx.Param("id")
-	_, err := c.repository.FindByID(param)
+	_, err := c.service.FindTaskByID(ctx)
 	if err != nil {
 		return ctx.JSON(http.StatusNotFound, presenter.NewErrorResponse(TaskNotFoundMessage, ""))
 	}
 
-	err = c.repository.Delete(param)
+	err = c.service.DeleteTask(ctx)
 	if err != nil {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
@@ -193,8 +177,7 @@ func (c *TaskController) DeleteTask(ctx echo.Context) error {
 // @Failure 500 {object} presenter.ErrorResponse
 // @Router /tasks/{id}/close [patch]
 func (c *TaskController) CloseTask(ctx echo.Context) error {
-	param := ctx.Param("id")
-	task, err := c.repository.FindByID(param)
+	task, err := c.service.FindTaskByID(ctx)
 	if err != nil {
 		return ctx.JSON(http.StatusNotFound, presenter.NewErrorResponse(TaskNotFoundMessage, ""))
 	}
@@ -203,26 +186,11 @@ func (c *TaskController) CloseTask(ctx echo.Context) error {
 		return ctx.JSON(http.StatusForbidden, presenter.NewErrorResponse(NotAllowedMessage, ""))
 	}
 
-	now := time.Now().Format("2006-01-02 15:04:05")
-	task.Date = &now
-	err = c.repository.Update(task)
+	err = c.service.CloseTask(task)
 	if err != nil {
 		log.Error(err.Error())
 		return ctx.JSON(http.StatusInternalServerError, presenter.InternalErrorResponse())
 	}
 
-	go func() {
-		_ = c.Notify(task)
-	}()
-
 	return ctx.JSON(http.StatusOK, presenter.PopulateTask(task))
-}
-
-func (c *TaskController) Notify(task *entity.Task) (err error) {
-	message := fmt.Sprintf("The tech %d performed the task %s on date %s", task.UserID, task.Summary, *task.Date)
-	err = c.broker.Publish(context.Background(), []byte(message))
-	if err != nil {
-		log.Error(err.Error())
-	}
-	return
 }

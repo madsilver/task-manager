@@ -3,7 +3,7 @@ package mysql
 import (
 	"errors"
 	"github.com/golang/mock/gomock"
-	mockMysql "github.com/madsilver/task-manager/internal/adapter/repository/mysql/mock"
+	mockcore "github.com/madsilver/task-manager/internal/adapter/core/mock"
 	"github.com/madsilver/task-manager/internal/entity"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -13,7 +13,7 @@ func TestTaskRepository_FindAll(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockFn := mockQueryFunction(1, 1, "test summary", "2024-03-29 10:00:00")
-	mockDB := mockMysql.NewMockDB(ctrl)
+	mockDB := mockcore.NewMockDB(ctrl)
 	mockDB.EXPECT().
 		Query(gomock.Any(), gomock.Any(), gomock.Any()).
 		DoAndReturn(mockFn)
@@ -29,7 +29,7 @@ func TestTaskRepository_FindByID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockFn := mockQueryRowFunction(1, 1, "test summary", "2024-03-29 10:00:00")
-	mockDB := mockMysql.NewMockDB(ctrl)
+	mockDB := mockcore.NewMockDB(ctrl)
 	mockDB.EXPECT().
 		QueryRow(gomock.Any(), gomock.Any(), gomock.Any()).
 		DoAndReturn(mockFn)
@@ -44,7 +44,7 @@ func TestTaskRepository_FindByID(t *testing.T) {
 func TestTaskRepository_Create(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockDB := mockMysql.NewMockDB(ctrl)
+	mockDB := mockcore.NewMockDB(ctrl)
 	mockDB.EXPECT().
 		Save(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(int64(1), nil)
@@ -60,7 +60,7 @@ func TestTaskRepository_Create(t *testing.T) {
 func TestTaskRepository_CreateError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockDB := mockMysql.NewMockDB(ctrl)
+	mockDB := mockcore.NewMockDB(ctrl)
 	mockDB.EXPECT().
 		Save(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil, errors.New("error"))
@@ -76,7 +76,7 @@ func TestTaskRepository_CreateError(t *testing.T) {
 func TestTaskRepository_Update(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockDB := mockMysql.NewMockDB(ctrl)
+	mockDB := mockcore.NewMockDB(ctrl)
 	mockDB.EXPECT().
 		Update(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil)
@@ -90,7 +90,7 @@ func TestTaskRepository_Update(t *testing.T) {
 func TestTaskRepository_Delete(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockDB := mockMysql.NewMockDB(ctrl)
+	mockDB := mockcore.NewMockDB(ctrl)
 	mockDB.EXPECT().
 		Delete(gomock.Any(), gomock.Any()).
 		Return(nil)

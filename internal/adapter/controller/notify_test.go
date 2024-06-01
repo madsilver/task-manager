@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/golang/mock/gomock"
-	mockController "github.com/madsilver/task-manager/internal/adapter/controller/mock"
+	mockController "github.com/madsilver/task-manager/internal/adapter/core/mock"
 	"testing"
 )
 
