@@ -2,17 +2,16 @@ package repository
 
 import (
 	"context"
+	"github.com/madsilver/task-manager/internal/domain"
+	"gorm.io/gorm"
 	"time"
 )
 
-const (
-	CreateOperation = "CREATE"
-	UpdateOperation = "UPDATE"
-	DeleteOperation = "DELETE"
-	ReadOperation   = "READ"
-)
+type taskAuditRepository struct {
+	db *gorm.DB
+}
 
-type taskAuditLogs struct {
+type taskAudit struct {
 	ID          int64 `gorm:"primaryKey"`
 	TaskID      int64
 	Operation   string
@@ -20,20 +19,19 @@ type taskAuditLogs struct {
 	PerformedAt time.Time
 }
 
-func (r *taskRepository) logTaskAudit(ctx context.Context, taskID int64, op string) {
-	var performedBy int64
+func NewTaskAuditRepository(db *gorm.DB) domain.TaskAuditRepository {
+	return &taskAuditRepository{db}
+}
 
-	userID := ctx.Value("user_id")
-	if userID != nil {
-		performedBy = int64(userID.(float64))
-	}
-
-	log := &taskAuditLogs{
-		TaskID:      taskID,
-		Operation:   op,
-		PerformedBy: &performedBy,
-		PerformedAt: time.Now(),
-	}
-
-	r.db.Create(log)
+// Create inserts a new audit log for a task operation.
+// ctx: the context for the operation.
+// taskID: the ID of the task being audited.
+// op: the operation performed on the task (e.g., "CREATE", "UPDATE", "DELETE", "READ").
+func (t *taskAuditRepository) Create(ctx context.Context, audit *domain.TaskAudit) error {
+	return t.db.Create(&taskAudit{
+		TaskID:      audit.TaskID,
+		Operation:   audit.Operation,
+		PerformedBy: audit.PerformedBy,
+		PerformedAt: audit.PerformedAt,
+	}).Error
 }

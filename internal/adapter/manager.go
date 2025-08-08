@@ -20,6 +20,7 @@ type Manager struct {
 func NewManager(conn *gorm.DB, broker notify.Broker, log handler.Logger) *Manager {
 	taskUseCase := usecase.NewTaskUseCase(
 		repository.NewTaskRepository(conn),
+		repository.NewTaskAuditRepository(conn),
 		notify.NewTaskNotify(broker, log),
 	)
 

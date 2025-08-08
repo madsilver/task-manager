@@ -43,8 +43,6 @@ func (r *taskRepository) Create(ctx context.Context, task *domain.Task) error {
 	task.CreatedAt = model.CreatedAt
 	task.UpdatedAt = model.UpdatedAt
 
-	go r.logTaskAudit(ctx, task.ID, CreateOperation)
-
 	return nil
 }
 
@@ -56,8 +54,6 @@ func (r *taskRepository) GetAll(ctx context.Context) ([]*domain.Task, error) {
 	if err := r.db.WithContext(ctx).Find(&models).Error; err != nil {
 		return nil, err
 	}
-
-	go r.logTaskAudit(ctx, 0, ReadOperation)
 
 	var tasksList []*domain.Task
 	for _, model := range models {
@@ -83,8 +79,6 @@ func (r *taskRepository) GetByID(ctx context.Context, id int64) (*domain.Task, e
 		return nil, err
 	}
 
-	go r.logTaskAudit(ctx, model.ID, ReadOperation)
-
 	return &domain.Task{
 		ID:        model.ID,
 		Title:     model.Title,
@@ -107,8 +101,6 @@ func (r *taskRepository) Update(ctx context.Context, task *domain.Task) error {
 		OwnerID: task.OwnerID,
 	}
 
-	go r.logTaskAudit(ctx, task.ID, UpdateOperation)
-
 	return r.db.WithContext(ctx).Save(&model).Error
 }
 
@@ -117,11 +109,7 @@ func (r *taskRepository) Update(ctx context.Context, task *domain.Task) error {
 // id: the ID of the task to delete
 // Returns an error if the deletion fails.
 func (r *taskRepository) Delete(ctx context.Context, id int64) error {
-	err := r.db.WithContext(ctx).Delete(&tasks{}, id).Error
-	if err == nil {
-		go r.logTaskAudit(ctx, id, DeleteOperation)
-	}
-	return err
+	return r.db.WithContext(ctx).Delete(&tasks{}, id).Error
 }
 
 // BeforeSave hooks for encrypting the Summary field.
