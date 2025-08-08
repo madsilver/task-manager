@@ -28,6 +28,12 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   tm-api:
     build:
@@ -42,7 +48,7 @@ services:
       tm-mysql:
         condition: service_healthy
       tm-rabbitmq:
-        condition: service_started
+        condition: service_healthy
 
 volumes:
   mysql_tm:
