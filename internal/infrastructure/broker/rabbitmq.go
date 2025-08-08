@@ -3,6 +3,7 @@ package broker
 import (
 	"context"
 	"fmt"
+	"github.com/madsilver/task-manager/internal/adapter/handler"
 	"github.com/madsilver/task-manager/internal/adapter/notify"
 	"github.com/madsilver/task-manager/internal/infrastructure/env"
 	"github.com/rabbitmq/amqp091-go"
@@ -17,23 +18,26 @@ const (
 type rabbitMQ struct {
 	channel   *amqp091.Channel
 	queueName string
+	log       handler.Logger
 }
 
-func NewRabbitMQ(queueName string) notify.Broker {
+func NewRabbitMQ(ctx context.Context, queueName string, log handler.Logger) notify.Broker {
 	conn, err := amqp091.Dial(getDSN())
 	if err != nil {
-		log.Fatalf("rabbitmq connection error: %v", err)
+		log.Panic(ctx, "rabbitmq connection error:"+err.Error())
 	}
 
 	channel, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("rabbitmq channel error: %v", err)
+		log.Panic(ctx, "rabbitmq channel error:"+err.Error())
 	}
 
 	_, err = channel.QueueDeclare(queueName, true, false, false, false, nil)
 	if err != nil {
-		log.Fatalf("rabbitmq queue declare error: %v", err)
+		log.Panic(ctx, "rabbitmq queue declare  error:"+err.Error())
 	}
+
+	log.Info(ctx, "rabbitmq connection established")
 
 	return &rabbitMQ{
 		channel:   channel,

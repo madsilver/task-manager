@@ -19,7 +19,7 @@ func main() {
 	srv := server.NewGinServer(
 		adapter.NewManager(
 			db.NewMySQLDB(),
-			broker.NewRabbitMQ(NotificationQueue),
+			broker.NewRabbitMQ(ctx, NotificationQueue, log),
 			log,
 		),
 	)
