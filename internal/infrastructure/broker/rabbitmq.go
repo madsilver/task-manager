@@ -7,7 +7,6 @@ import (
 	"github.com/madsilver/task-manager/internal/adapter/notify"
 	"github.com/madsilver/task-manager/internal/infrastructure/env"
 	"github.com/rabbitmq/amqp091-go"
-	"log"
 )
 
 const (
@@ -80,7 +79,7 @@ func (r *rabbitMQ) Consume(ctx context.Context) (<-chan []byte, error) {
 		for d := range deliveryCh {
 			out <- d.Body
 			if err := d.Ack(false); err != nil {
-				log.Printf("failed to acknowledge message: %v", err)
+				r.log.Error(ctx, "failed to acknowledge message", err)
 			}
 		}
 	}()
