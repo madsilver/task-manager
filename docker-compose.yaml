@@ -1,21 +1,4 @@
 services:
-  tm-postgres:
-    image: postgres:15
-    container_name: tm-postgres
-    restart: always
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    ports:
-      - ${DB_PORT}:5432
-    volumes:
-      - postgres_tm:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   tm-mysql:
     image: mysql:8.4.6
@@ -58,9 +41,9 @@ services:
     depends_on:
       tm-mysql:
         condition: service_healthy
+      tm-rabbitmq:
+        condition: service_started
 
 volumes:
-  postgres_tm:
-    driver: local
   mysql_tm:
     driver: local
