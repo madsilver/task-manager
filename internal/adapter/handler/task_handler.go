@@ -45,8 +45,6 @@ func (h *taskHandler) Create(c ContextHTTP) error {
 		return c.JSON(http.StatusBadRequest, presenter.ErrorResponse{Error: "invalid request"})
 	}
 
-	task.OwnerID = h.UserIDFromContext(c)
-
 	if err := h.uc.CreateTask(c, &task); err != nil {
 		h.log.Error(c, "failed to create task", err)
 		return c.JSON(http.StatusInternalServerError, presenter.ErrorResponse{Error: "failed to create task"})
@@ -94,7 +92,7 @@ func (h *taskHandler) GetByID(c ContextHTTP) error {
 		return c.JSON(http.StatusNotFound, presenter.ErrorResponse{Error: "task not found"})
 	}
 
-	if !h.IsAllowedToRead(c, task) {
+	if !h.uc.IsAllowedToRead(c, task) {
 		return c.JSON(http.StatusForbidden, presenter.ErrorResponse{Error: "not allowed to read this task"})
 	}
 
@@ -154,29 +152,4 @@ func (h *taskHandler) Delete(c ContextHTTP) error {
 		return c.JSON(http.StatusInternalServerError, presenter.ErrorResponse{Error: err.Error()})
 	}
 	return c.JSON(http.StatusNoContent, nil)
-}
-
-// UserIDFromContext extracts the user ID from the context.
-func (h *taskHandler) UserIDFromContext(c ContextHTTP) int64 {
-	userID := c.Value("user_id")
-	if userID == nil {
-		return 0
-	}
-	return int64(userID.(float64))
-}
-
-// IsAllowedToRead checks if the user is allowed to read the task
-// c: ContextHTTP
-// task: the task to check
-// returns true if the user is allowed to read the task, false otherwise
-func (h *taskHandler) IsAllowedToRead(c ContextHTTP, task *domain.Task) bool {
-	roles := c.Value("roles")
-	if roles != nil {
-		for _, role := range roles.([]interface{}) {
-			if role == "manager" {
-				return true
-			}
-		}
-	}
-	return task.OwnerID == h.UserIDFromContext(c)
 }

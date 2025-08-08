@@ -99,6 +99,20 @@ func (mr *MockTaskUseCaseMockRecorder) GetTaskByID(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTaskByID", reflect.TypeOf((*MockTaskUseCase)(nil).GetTaskByID), ctx, id)
 }
 
+// IsAllowedToRead mocks base method.
+func (m *MockTaskUseCase) IsAllowedToRead(c context.Context, task *domain.Task) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsAllowedToRead", c, task)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// IsAllowedToRead indicates an expected call of IsAllowedToRead.
+func (mr *MockTaskUseCaseMockRecorder) IsAllowedToRead(c, task any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAllowedToRead", reflect.TypeOf((*MockTaskUseCase)(nil).IsAllowedToRead), c, task)
+}
+
 // UpdateTask mocks base method.
 func (m *MockTaskUseCase) UpdateTask(ctx context.Context, task *domain.Task) error {
 	m.ctrl.T.Helper()
@@ -111,4 +125,18 @@ func (m *MockTaskUseCase) UpdateTask(ctx context.Context, task *domain.Task) err
 func (mr *MockTaskUseCaseMockRecorder) UpdateTask(ctx, task any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTask", reflect.TypeOf((*MockTaskUseCase)(nil).UpdateTask), ctx, task)
+}
+
+// UserIDFromContext mocks base method.
+func (m *MockTaskUseCase) UserIDFromContext(c context.Context) int64 {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserIDFromContext", c)
+	ret0, _ := ret[0].(int64)
+	return ret0
+}
+
+// UserIDFromContext indicates an expected call of UserIDFromContext.
+func (mr *MockTaskUseCaseMockRecorder) UserIDFromContext(c any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserIDFromContext", reflect.TypeOf((*MockTaskUseCase)(nil).UserIDFromContext), c)
 }
