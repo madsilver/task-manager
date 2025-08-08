@@ -1,5 +1,5 @@
 -- +migrate Up
-CREATE TABLE task_audit_logs (
+CREATE TABLE task_audits (
      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
      task_id BIGINT NOT NULL,
      operation ENUM('CREATE', 'UPDATE', 'DELETE', 'READ') NOT NULL,
