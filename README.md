@@ -94,6 +94,9 @@ This updates the `.env` file with a valid `TASK_ENCRYPTION_KEY` (Base64-encoded 
 
 Ensure the following is present in your `.env` file.
 
+Special attention should be given to the environment variables `DB_HOST` and `RABBITMQ_HOST`. When running the 
+application locally, these should be set to `localhost` or the appropriate host.
+
 ---
 
 ## Endpoints
