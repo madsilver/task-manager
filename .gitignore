@@ -1,0 +1,5 @@
+.env
+.coverage/
+.idea/
+.run/
+.DS_Store

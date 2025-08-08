@@ -1,0 +1,39 @@
+### POST Login as Tech User
+POST  http://localhost:8000/api/v1/login
+Content-Type: application/json
+
+{
+  "email": "tech1@company.com",
+  "password": "password123"
+}
+
+> {% client.global.set("auth_token", response.body.token); %}
+
+### POST Login as Manager User
+POST  http://localhost:8000/api/v1/login
+Content-Type: application/json
+
+{
+  "email": "manager@company.com",
+  "password": "password123"
+}
+
+> {% client.global.set("auth_token", response.body.token); %}
+
+### POST Create Task
+POST http://localhost:8000/api/v1/tasks
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "title": "Test task",
+  "summary": "Test summary"
+}
+
+### GET Task By ID
+GET  http://localhost:8000/api/v1/tasks/1
+Authorization: Bearer {{auth_token}}
+
+### GET Task List
+GET  http://localhost:8000/api/v1/tasks
+Authorization: Bearer {{auth_token}}

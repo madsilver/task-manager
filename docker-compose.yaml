@@ -1,0 +1,66 @@
+services:
+  tm-postgres:
+    image: postgres:15
+    container_name: tm-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - postgres_tm:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tm-mysql:
+    image: mysql:8.4.6
+    container_name: tm-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mysql_tm:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tm-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: tm-rabbitmq
+    ports:
+      - ${RABBITMQ_PORT}:5672
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+
+  tm-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tm-api
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    env_file:
+      - .env.example
+    depends_on:
+      tm-mysql:
+        condition: service_healthy
+
+volumes:
+  postgres_tm:
+    driver: local
+  mysql_tm:
+    driver: local

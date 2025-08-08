@@ -1,0 +1,286 @@
+basePath: /api/v1
+definitions:
+  domain.Task:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      ownerID:
+        type: integer
+      summary:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  domain.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+    type: object
+  presenter.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  presenter.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  presenter.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  presenter.TaskResponse:
+    properties:
+      id:
+        type: integer
+      owner_id:
+        type: integer
+      summary:
+        type: string
+      title:
+        type: string
+    type: object
+  presenter.UserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+externalDocs:
+  url: https://www.linkedin.com/in/silverdev
+host: localhost:8000
+info:
+  contact:
+    email: rbpsilver@gmail.com
+    name: Rodrigo Prata
+  description: Task Manager API is a RESTful API for managing tasks.
+  title: Task Manager API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/presenter.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.LoginResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+      summary: Authenticate user and return JWT.
+      tags:
+      - Auth
+  /tasks:
+    get:
+      description: Find all tasks.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.TaskResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Find all tasks.
+      tags:
+      - Task
+    post:
+      consumes:
+      - application/json
+      description: Create new task.
+      parameters:
+      - description: Task payload
+        in: body
+        name: Task
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Task'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/presenter.TaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create task.
+      tags:
+      - Task
+  /tasks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a task by ID.
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete task.
+      tags:
+      - Task
+    get:
+      description: Find a task by the ID.
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.TaskResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Find task by ID.
+      tags:
+      - Task
+    put:
+      consumes:
+      - application/json
+      description: Update a task by ID.
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Task payload
+        in: body
+        name: Task
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Task'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.TaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update task.
+      tags:
+      - Task
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create new users.
+      parameters:
+      - description: User payload
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/domain.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/presenter.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/presenter.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create user.
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

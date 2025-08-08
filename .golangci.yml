@@ -1,0 +1,128 @@
+# This code is licensed under the terms of the MIT license https://opensource.org/license/mit
+# Copyright (c) 2021 Marat Reymers
+
+## Golden config for golangci-lint v1.62.0
+#
+# This is the best config for golangci-lint based on my experience and opinion.
+# It is very strict, but not extremely strict.
+# Feel free to adapt and change it for your needs.
+
+run:
+  # Timeout for analysis, e.g. 30s, 5m.
+  # Default: 1m
+  timeout: 3m
+  # Leave existing less flexible setting for compatibility.
+  # Setting it to false will be equivalent to linters.tests-disable-all=true.
+  # Setting it to true will be equivalent to linters.tests-enable-all=true.
+  tests: false
+
+
+# This file contains only configs which differ from defaults.
+# All possible options can be found here https://github.com/golangci/golangci-lint/blob/master/.golangci.reference.yml
+linters-settings:
+  cyclop:
+    # The maximal code complexity to report.
+    # Default: 10
+    max-complexity: 10
+    # The maximal average package complexity.
+    # If it's higher than 0.0 (float) the check is enabled
+    # Default: 0.0
+    package-average: 10.0
+
+  errcheck:
+    # Report about not checking of errors in type assertions: `a := b.(MyStruct)`.
+    # Such cases aren't reported by default.
+    # Default: false
+    check-type-assertions: true
+
+  exhaustive:
+    # Program elements to check for exhaustiveness.
+    # Default: [ switch ]
+    check:
+      - switch
+      - map
+    default-signifies-exhaustive: false
+
+  funlen:
+    # Checks the number of lines in a function.
+    # If lower than 0, disable the check.
+    # Default: 60
+    lines: 100
+    # Checks the number of statements in a function.
+    # If lower than 0, disable the check.
+    # Default: 40
+    statements: 50
+    # Ignore comments when counting lines.
+    # Default false
+    ignore-comments: true
+
+  gochecksumtype:
+    # Presence of `default` case in switch statements satisfies exhaustiveness, if all members are not listed.
+    # Default: true
+    default-signifies-exhaustive: false
+
+  gocognit:
+    # Minimal code complexity to report.
+    # Default: 30 (but we recommend 10-20)
+    min-complexity: 20
+
+  sloglint:
+    # Enforce not using global loggers.
+    # Values:
+    # - "": disabled
+    # - "all": report all global loggers
+    # - "default": report only the default slog logger
+    # https://github.com/go-simpler/sloglint?tab=readme-ov-file#no-global
+    # Default: ""
+    no-global: "all"
+    # Enforce using methods that accept a context.
+    # Values:
+    # - "": disabled
+    # - "all": report all contextless calls
+    # - "scope": report only if a context exists in the scope of the outermost function
+    # https://github.com/go-simpler/sloglint?tab=readme-ov-file#context-only
+    # Default: ""
+    context: "scope"
+
+linters:
+
+  disable-all: true
+  enable:
+    ## enabled by default
+    #- errcheck # checking for unchecked errors, these unchecked errors can be critical bugs in some cases
+    - gosimple # specializes in simplifying a code
+    - govet # reports suspicious constructs, such as Printf calls whose arguments do not align with the format string
+    - ineffassign # detects when assignments to existing variables are not used
+    - staticcheck # is a go vet on steroids, applying a ton of static analysis checks
+    - typecheck # like the front-end of a Go compiler, parses and type-checks Go code
+    - unused # checks for unused constants, variables, functions and types
+    ## disabled by default
+    - asciicheck # checks that your code does not contain non-ASCII identifiers
+    - bidichk # checks for dangerous unicode character sequences
+    - bodyclose # checks whether HTTP response body is closed successfully
+    - copyloopvar # detects places where loop variables are copied (Go 1.22+)
+    - cyclop # checks function and package cyclomatic complexity
+    - dupl # tool for code clone detection
+    - errname # checks that sentinel errors are prefixed with the Err and error types are suffixed with the Error
+    - errorlint # finds code that will cause problems with the error wrapping scheme introduced in Go 1.13
+    - exhaustive # checks exhaustiveness of enum switch statements
+    - fatcontext # detects nested contexts in loops
+    - forbidigo # forbids identifiers
+    - gocheckcompilerdirectives # validates go compiler directive comments (//go:)
+    - gocognit # computes and checks the cognitive complexity of functions
+    - goconst # finds repeated strings that could be replaced by a constant
+    - gocritic # provides diagnostics that check for bugs, performance and style issues
+    - gocyclo # computes and checks the cyclomatic complexity of functions
+    - gosec # inspects source code for security problems
+    - iface # checks the incorrect use of interfaces, helping developers avoid interface pollution
+    - makezero # finds slice declarations with non-zero initial length
+    - mirror # reports wrong mirror patterns of bytes/strings usage
+    - mnd # detects magic numbers
+    - unconvert # removes unnecessary type conversions
+    - unparam # reports unused function parameters
+
+issues:
+  # Maximum count of issues with the same text.
+  # Set to 0 to disable.
+  # Default: 3
+  max-same-issues: 0
