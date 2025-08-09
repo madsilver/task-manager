@@ -13,6 +13,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - uses: actions/checkout@v4
 
@@ -44,3 +45,16 @@ jobs:
 
       - name: Build
         run: go build -o api cmd/api/main.go
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          COMMIT=$(git rev-parse --short HEAD)
+          docker build -t madsilver/task-manager-api:${COMMIT} -t madsilver/task-manager-api:latest .
+          docker push madsilver/task-manager-api:${COMMIT}
+          docker push madsilver/task-manager-api:latest
