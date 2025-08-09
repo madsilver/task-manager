@@ -170,6 +170,19 @@ html-c          Generate HTML coverage report
 lint            Run linter
 sec             Run vulnerability scan
 ```
+---
+
+## CI/CD
+
+This project has an automated pipeline that:
+
+- Runs a vulnerability scan
+- Performs linting
+- Executes tests
+- Builds the go binary
+- Builds and publishes a docker image
+
+The pipeline is defined in `.github/workflows/go.yml` and is triggered on every push to the `main` branch.
 
 ---
 
