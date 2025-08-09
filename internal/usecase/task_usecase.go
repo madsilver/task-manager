@@ -95,12 +95,7 @@ func (u *taskUseCase) DeleteTask(ctx context.Context, id int64) error {
 // taskID: the ID of the task on which the operation was performed
 // operation: the type of operation performed (CREATE, UPDATE, DELETE, READ)
 func (u *taskUseCase) AuditTask(ctx context.Context, taskID int64, operation string) {
-	var performedBy int64
-	userID := ctx.Value("user_id")
-	if userID != nil {
-		performedBy = int64(userID.(float64))
-	}
-
+	performedBy := u.UserIDFromContext(ctx)
 	u.auditRepository.Create(ctx, &domain.TaskAudit{
 		TaskID:      taskID,
 		Operation:   operation,
