@@ -65,6 +65,7 @@ func (h *taskHandler) Create(c ContextHTTP) error {
 func (h *taskHandler) GetAll(c ContextHTTP) error {
 	tasks, err := h.uc.GetAllTasks(c)
 	if err != nil {
+		h.log.Error(c, "failed to get all tasks", err)
 		return c.JSON(http.StatusNotFound, presenter.ErrorResponse{Error: "tasks not found"})
 	}
 	return c.JSON(http.StatusOK, presenter.ToTaskResponseList(tasks))
@@ -89,6 +90,7 @@ func (h *taskHandler) GetByID(c ContextHTTP) error {
 
 	task, err := h.uc.GetTaskByID(c, id)
 	if err != nil {
+		h.log.Error(c, "failed to get task by id", err)
 		return c.JSON(http.StatusNotFound, presenter.ErrorResponse{Error: "task not found"})
 	}
 
