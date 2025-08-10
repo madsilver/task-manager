@@ -1,4 +1,4 @@
-### POST Login as Tech User
+### Login as Tech User
 POST  http://localhost:8000/api/v1/login
 Content-Type: application/json
 
@@ -9,7 +9,7 @@ Content-Type: application/json
 
 > {% client.global.set("auth_token", response.body.token); %}
 
-### POST Login as Manager User
+### Login as Manager User
 POST  http://localhost:8000/api/v1/login
 Content-Type: application/json
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 
 > {% client.global.set("auth_token", response.body.token); %}
 
-### POST Create Task
+### Create Task
 POST http://localhost:8000/api/v1/tasks
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
@@ -30,10 +30,28 @@ Authorization: Bearer {{auth_token}}
   "summary": "Test summary"
 }
 
-### GET Task By ID
+### GetTask By ID
 GET  http://localhost:8000/api/v1/tasks/1
 Authorization: Bearer {{auth_token}}
 
-### GET Task List
+### Get Task List
 GET  http://localhost:8000/api/v1/tasks
+Authorization: Bearer {{auth_token}}
+
+### Update Task
+PUT http://localhost:8000/api/v1/tasks/1
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "id": 1,
+  "title": "Test update task",
+  "summary": "Test update summary",
+  "owner_id": 2,
+  "created_at": "2025-08-09T10:16:15Z"
+}
+
+### Delete Task
+DELETE http://localhost:8000/api/v1/tasks/1
+Content-Type: application/json
 Authorization: Bearer {{auth_token}}

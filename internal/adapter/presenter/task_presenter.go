@@ -1,12 +1,17 @@
 package presenter
 
-import "github.com/madsilver/task-manager/internal/domain"
+import (
+	"github.com/madsilver/task-manager/internal/domain"
+	"time"
+)
 
 type TaskResponse struct {
-	ID      int64  `json:"id"`
-	Title   string `json:"title"`
-	Summary string `json:"summary"`
-	OwnerID int64  `json:"owner_id"`
+	ID        int64     `json:"id"`
+	Title     string    `json:"title"`
+	Summary   string    `json:"summary"`
+	OwnerID   int64     `json:"owner_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // ToTaskResponse converts a domain.Task to a TaskResponse.
@@ -14,10 +19,12 @@ type TaskResponse struct {
 // returns *TaskResponse
 func ToTaskResponse(task *domain.Task) *TaskResponse {
 	return &TaskResponse{
-		ID:      task.ID,
-		Title:   task.Title,
-		Summary: task.Summary,
-		OwnerID: task.OwnerID,
+		ID:        task.ID,
+		Title:     task.Title,
+		Summary:   task.Summary,
+		OwnerID:   task.OwnerID,
+		CreatedAt: task.CreatedAt,
+		UpdatedAt: task.UpdatedAt,
 	}
 }
 

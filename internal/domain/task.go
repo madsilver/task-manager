@@ -10,8 +10,8 @@ type Task struct {
 	Title     string
 	Summary   string
 	OwnerID   int64
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type TaskRepository interface {

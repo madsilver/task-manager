@@ -18,7 +18,7 @@ This mandates **audit controls** to track and review activities involving PHI, e
 
 ## Decision
 
-We will implement a dedicated audit table named `task_audit_logs` to record actions performed on the `task` entity.
+We will implement a dedicated audit table named `task_audits` to record actions performed on the `task` entity.
 
 The audit table will include:
 
@@ -47,7 +47,7 @@ The audit table will include:
 
 ## Future Work
 
-- Restrict access to `task_audit_logs` table
+- Restrict access to `task_audits` table
 - Enforce **secure retention** and **monitoring policies** for audit logs
 
 ---

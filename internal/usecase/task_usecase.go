@@ -71,6 +71,7 @@ func (u *taskUseCase) GetTaskByID(ctx context.Context, id int64) (*domain.Task, 
 // task: the task to be updated
 // returns an error if the task could not be updated
 func (u *taskUseCase) UpdateTask(ctx context.Context, task *domain.Task) error {
+	task.UpdatedAt = time.Now().UTC()
 	err := u.taskRepository.Update(ctx, task)
 	if err == nil {
 		go u.AuditTask(ctx, task.ID, UpdateOperation)
@@ -85,7 +86,7 @@ func (u *taskUseCase) UpdateTask(ctx context.Context, task *domain.Task) error {
 func (u *taskUseCase) DeleteTask(ctx context.Context, id int64) error {
 	err := u.taskRepository.Delete(ctx, id)
 	if err == nil {
-		go u.AuditTask(ctx, 0, DeleteOperation)
+		go u.AuditTask(ctx, id, DeleteOperation)
 	}
 	return err
 }

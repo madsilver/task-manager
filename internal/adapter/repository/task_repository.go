@@ -95,10 +95,11 @@ func (r *taskRepository) GetByID(ctx context.Context, id int64) (*domain.Task, e
 // Returns an error if the update fails.
 func (r *taskRepository) Update(ctx context.Context, task *domain.Task) error {
 	model := tasks{
-		ID:      task.ID,
-		Title:   task.Title,
-		Summary: task.Summary,
-		OwnerID: task.OwnerID,
+		ID:        task.ID,
+		Title:     task.Title,
+		Summary:   task.Summary,
+		OwnerID:   task.OwnerID,
+		CreatedAt: task.CreatedAt,
 	}
 
 	return r.db.WithContext(ctx).Save(&model).Error
