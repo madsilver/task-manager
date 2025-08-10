@@ -9,7 +9,7 @@ type Task struct {
 	ID        int64
 	Title     string
 	Summary   string
-	OwnerID   int64
+	OwnerID   int64     `json:"owner_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
