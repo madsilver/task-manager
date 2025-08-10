@@ -12,10 +12,10 @@ The API requires an authentication mechanism that is stateless, portable across 
 
 We chose **JWT (JSON Web Token)** as the authentication strategy for the following reasons:
 
-* ✅ **Stateless**: No need to persist sessions on the server
-* ✅ **Portable**: Token can be used across different microservices or external systems
-* ✅ **Standardized**: Widely supported and well-documented
-* ✅ **Flexible claims**: Allows encoding of user ID, roles, and permissions
+* **Stateless**: No need to persist sessions on the server
+* **Portable**: Token can be used across different microservices or external systems
+* **Standardized**: Widely supported and well-documented
+* **Flexible claims**: Allows encoding of user ID, roles, and permissions
 
 ### Token Generation
 
