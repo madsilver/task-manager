@@ -17,6 +17,8 @@ const (
 	ServerWriteTimeoutDefault      = 15 * time.Second
 	ServerIdleTimeout              = "IDLE_TIMEOUT"
 	ServerIdleTimeoutDefault       = 60 * time.Second
+	ServerShutdownTimeout          = "SERVER_SHUTDOWN_TIMEOUT"
+	ServerShutdownTimeoutDefault   = 5 * time.Second
 	DbHost                         = "DB_HOST"
 	DbHostDefault                  = "localhost"
 	DbPort                         = "DB_PORT"
@@ -51,6 +53,7 @@ type app struct {
 	ServerReadHeaderTimeout time.Duration
 	ServerWriteTimeout      time.Duration
 	ServerIdleTimeout       time.Duration
+	ServerShutdownTimeout   time.Duration
 	DbHost                  string
 	DbPort                  string
 	DbSSLMode               string
@@ -75,6 +78,7 @@ func init() {
 		ServerReadHeaderTimeout: GetTime(ServerReadHeaderTimeout, ServerReadHeaderTimeoutDefault),
 		ServerWriteTimeout:      GetTime(ServerWriteTimeout, ServerWriteTimeoutDefault),
 		ServerIdleTimeout:       GetTime(ServerIdleTimeout, ServerIdleTimeoutDefault),
+		ServerShutdownTimeout:   GetTime(ServerShutdownTimeout, ServerShutdownTimeoutDefault),
 		DbHost:                  GetStr(DbHost, DbHostDefault),
 		DbPort:                  GetStr(DbPort, DbPortDefault),
 		DbSSLMode:               GetStr(DbSSLMode, DbSSLModeDefault),

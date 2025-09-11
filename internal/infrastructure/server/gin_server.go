@@ -16,7 +16,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"time"
 )
 
 type GinServer struct {
@@ -51,7 +50,7 @@ func (s *GinServer) Start() chan error {
 
 	go func() {
 		<-quit
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), env.App.ServerShutdownTimeout)
 		defer cancel()
 		err <- srv.Shutdown(ctx)
 	}()
