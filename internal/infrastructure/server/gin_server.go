@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	docs "github.com/madsilver/task-manager/docs/swagger"
@@ -15,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 )
 
 type GinServer struct {
@@ -49,7 +51,9 @@ func (s *GinServer) Start() chan error {
 
 	go func() {
 		<-quit
-		err <- srv.Close()
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err <- srv.Shutdown(ctx)
 	}()
 
 	go func() {
